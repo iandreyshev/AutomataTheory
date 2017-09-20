@@ -131,7 +131,6 @@
     <ClInclude Include="CDotWriter.h" />
     <ClInclude Include="CMealyTable.h" />
     <ClInclude Include="CUtils.h" />
-    <ClInclude Include="CGraphPainter.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

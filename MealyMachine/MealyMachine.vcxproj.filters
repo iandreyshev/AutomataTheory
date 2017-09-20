@@ -44,8 +44,5 @@
     <ClInclude Include="CMealyTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CGraphPainter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

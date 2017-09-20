@@ -1,20 +1,23 @@
 #include <string>
 #include <iostream>
+#include <SFML/Graphics.hpp>
 
 #include "CMealyTable.h"
 #include "CDotWriter.h"
-#include "CGraphPainter.h"
 
 namespace
 {
 	const int ARGUMENTS_COUNT = 1;
 	const std::string INSTANCE_DOT_NAME = "instance.dot";
 	const std::string MINIMIZE_DOT_NAME = "mininmize.dot";
+	const std::string WINDOW_NAME = "Mealy machines";
+	const int WINDOW_WIDTH = 1024;
+	const int WINDOW_HEIGHT = 480;
 }
 
 CMealyTable CreateTable(const std::string &tableFilename);
 void CreateDotFiles(const CMealyTable &table);
-void DrawMachine();
+void Draw();
 
 int main(int argc, char* argv[])
 {
@@ -27,7 +30,7 @@ int main(int argc, char* argv[])
 
 		CMealyTable table = CreateTable(argv[0]);
 		CreateDotFiles(table);
-		CGraphPainter vizualizer(INSTANCE_DOT_NAME, MINIMIZE_DOT_NAME);
+		Draw();
 	}
 	catch (const std::exception &e)
 	{
@@ -60,7 +63,26 @@ void CreateDotFiles(const CMealyTable &table)
 	(void)table;
 }
 
-void DrawMachine()
+void Draw()
 {
+	sf::RenderWindow window(
+		sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+		WINDOW_NAME,
+		sf::Style::Titlebar | sf::Style::Close
+	);
 
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+		}
+
+		window.clear(sf::Color::White);
+		window.display();
+	}
 }
