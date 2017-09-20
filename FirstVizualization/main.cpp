@@ -11,14 +11,15 @@ int main()
 {
 	std::string graphFileName = "graph.dot";
 	std::ofstream graphFile(graphFileName);
-	CDotWriter* dotWriter = new CDotWriter(graphFile);
+	CDotWriter dotWriter(graphFile);
 
-	dotWriter->PrintVertex(0, "A", Terminal);
-	dotWriter->PrintVertex(1, "B", Initial);
-	dotWriter->PrintEdge(0, 1, "x");
-	delete(dotWriter);
+	dotWriter.PrintVertex(0, "A", Terminal);
+	dotWriter.PrintVertex(1, "B", Initial);
+	dotWriter.PrintEdge(0, 1, "x");
+	dotWriter.~CDotWriter();
+	graphFile.close();
 
-	if (!CUtils::RunProcess("dot -Tpng -o result.png grapdsh.dot"))
+	if (!CUtils::RunProcess("dot -Tpng -o result.png graph.dot"))
 	{
 		return 1;
 	}
