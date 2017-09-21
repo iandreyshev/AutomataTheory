@@ -123,6 +123,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CDotWriter.cpp" />
+    <ClCompile Include="CGraphVizualizer.cpp" />
+    <ClCompile Include="CMealyTable.cpp" />
     <ClCompile Include="CUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
@@ -131,6 +133,7 @@
     <ClInclude Include="CDotWriter.h" />
     <ClInclude Include="CMealyTable.h" />
     <ClInclude Include="CUtils.h" />
+    <ClInclude Include="CGraphVizualizer.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

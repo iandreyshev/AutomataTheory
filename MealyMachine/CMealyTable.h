@@ -12,19 +12,10 @@ struct MealyNode
 class CMealyTable
 {
 public:
-	CMealyTable() = delete;
-	CMealyTable(const tinyxml2::XMLDocument &xmlTable)
-	{
-		(void)xmlTable;
-	}
-	void Minimize()
-	{
-	}
-	void ForEach(std::function<void(MealyNode&)> action)
-	{
-		(void)action;
-	}
+	CMealyTable(const tinyxml2::XMLDocument &xmlTable);
+	CMealyTable Minimize() const;
 
 private:
+	CMealyTable();
 
 };

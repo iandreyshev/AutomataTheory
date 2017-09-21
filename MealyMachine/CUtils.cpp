@@ -34,6 +34,8 @@ namespace
 	private:
 		FILE *m_pipe = nullptr;
 	};
+
+	const std::string LOG_PREFIX = "> ";
 }
 
 bool CUtils::RunProcess(const std::string &command)
@@ -64,4 +66,9 @@ bool CUtils::RunProcess(const std::string &command)
 
 	std::fputs(std::strerror(errno), stderr);
 	return false;
+}
+
+void CUtils::Log(const std::string &message)
+{
+	std::cout << LOG_PREFIX << message << std::endl;
 }

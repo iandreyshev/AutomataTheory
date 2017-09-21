@@ -1,36 +1,40 @@
 #include <string>
-#include <iostream>
-#include <SFML/Graphics.hpp>
+#include <locale>
 
 #include "CMealyTable.h"
 #include "CDotWriter.h"
+#include "CGraphVizualizer.h"
+#include "CUtils.h"
 
 namespace
 {
-	const int ARGUMENTS_COUNT = 1;
-	const std::string INSTANCE_DOT_NAME = "instance.dot";
-	const std::string MINIMIZE_DOT_NAME = "mininmize.dot";
-	const std::string WINDOW_NAME = "Mealy machines";
-	const int WINDOW_WIDTH = 1024;
-	const int WINDOW_HEIGHT = 480;
+	const int ARGUMENTS_COUNT = 0;
+	const std::string GRAPH = ".dot";
+	const std::string IMAGE = ".png";
+	const std::string INSTANCE_FILE = "instance";
+	const std::string MINIMIZE_FILE = "minimize";
 }
 
 CMealyTable CreateTable(const std::string &tableFilename);
 void CreateDotFiles(const CMealyTable &table);
-void Draw();
 
 int main(int argc, char* argv[])
 {
+	(void)argv;
+	setlocale(LC_ALL, "rus");
 	try
 	{
 		if (argc < ARGUMENTS_COUNT)
 		{
-			throw new std::invalid_argument("Invalid arguments count.\nUse: MealyMachine.exe <table.xml>");
+			throw std::invalid_argument(
+				"Недостаточно агрументов.\nИспользуйте: MealyMachine.exe <table.xml>");
 		}
 
-		CMealyTable table = CreateTable(argv[0]);
+		CMealyTable table = CreateTable("");
 		CreateDotFiles(table);
-		Draw();
+
+		CGraphVizualizer vizualizer(INSTANCE_FILE + IMAGE, MINIMIZE_FILE + IMAGE);
+		vizualizer.Draw();
 	}
 	catch (const std::exception &e)
 	{
@@ -52,7 +56,7 @@ CMealyTable CreateTable(const std::string &tableFilename)
 	catch (const std::exception &e)
 	{
 		std::string msg = e.what();
-		throw new std::invalid_argument("Can not load xml file:\n" + msg);
+		throw std::invalid_argument("Failed to load xml-table:\n" + msg);
 	}
 
 	return CMealyTable(xmlTable);
@@ -60,29 +64,5 @@ CMealyTable CreateTable(const std::string &tableFilename)
 
 void CreateDotFiles(const CMealyTable &table)
 {
-	(void)table;
-}
-
-void Draw()
-{
-	sf::RenderWindow window(
-		sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
-		WINDOW_NAME,
-		sf::Style::Titlebar | sf::Style::Close
-	);
-
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				window.close();
-			}
-		}
-
-		window.clear(sf::Color::White);
-		window.display();
-	}
+	CMealyTable minimizeTable = table.Minimize();
 }
