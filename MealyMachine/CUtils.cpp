@@ -1,7 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "CUtils.h"
-#include <vector>
-#include <iostream>
 
 #ifdef _WIN32
 #define popen _popen
@@ -68,7 +66,15 @@ bool CUtils::RunProcess(const std::string &command)
 	return false;
 }
 
-void CUtils::Log(const std::string &message)
+XMLElementCollection CUtils::GetAllChilds(const tinyxml2::XMLElement* parent)
 {
-	std::cout << LOG_PREFIX << message << std::endl;
+	const tinyxml2::XMLElement* child = parent->FirstChildElement();
+	std::vector<const tinyxml2::XMLElement*> collection;
+	while (child)
+	{
+		collection.push_back(child);
+		child = child->NextSiblingElement();
+	}
+	return collection;
+
 }

@@ -124,14 +124,14 @@
   <ItemGroup>
     <ClCompile Include="CDotWriter.cpp" />
     <ClCompile Include="CGraphVizualizer.cpp" />
-    <ClCompile Include="CMealyTable.cpp" />
+    <ClCompile Include="CMealyMachine.cpp" />
     <ClCompile Include="CUtils.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDotWriter.h" />
-    <ClInclude Include="CMealyTable.h" />
+    <ClInclude Include="CMealyMachine.h" />
     <ClInclude Include="CUtils.h" />
     <ClInclude Include="CGraphVizualizer.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />

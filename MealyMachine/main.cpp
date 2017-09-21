@@ -1,37 +1,31 @@
 #include <string>
 #include <locale>
 
-#include "CMealyTable.h"
+#include "CMealyMachine.h"
 #include "CDotWriter.h"
 #include "CGraphVizualizer.h"
 #include "CUtils.h"
 
 namespace
 {
-	const int ARGUMENTS_COUNT = 0;
+	const char* XML_TABLE = "table.xml";
 	const std::string GRAPH = ".dot";
 	const std::string IMAGE = ".png";
 	const std::string INSTANCE_FILE = "instance";
 	const std::string MINIMIZE_FILE = "minimize";
 }
 
-CMealyTable CreateTable(const std::string &tableFilename);
-void CreateDotFiles(const CMealyTable &table);
+void CreateDotFiles(const CMealyMachine &table);
 
-int main(int argc, char* argv[])
+int main()
 {
-	(void)argv;
-	setlocale(LC_ALL, "rus");
 	try
 	{
-		if (argc < ARGUMENTS_COUNT)
-		{
-			throw std::invalid_argument(
-				"Недостаточно агрументов.\nИспользуйте: MealyMachine.exe <table.xml>");
-		}
-
-		CMealyTable table = CreateTable("");
-		CreateDotFiles(table);
+		tinyxml2::XMLDocument xmlTable(true);
+		xmlTable.SetBOM(true);
+		xmlTable.LoadFile(XML_TABLE);
+		CMealyMachine mealyMachine(xmlTable);
+		CreateDotFiles(mealyMachine);
 
 		CGraphVizualizer vizualizer(INSTANCE_FILE + IMAGE, MINIMIZE_FILE + IMAGE);
 		vizualizer.Draw();
@@ -45,24 +39,7 @@ int main(int argc, char* argv[])
 	return EXIT_SUCCESS;
 }
 
-CMealyTable CreateTable(const std::string &tableFilename)
+void CreateDotFiles(const CMealyMachine &table)
 {
-	tinyxml2::XMLDocument xmlTable;
-
-	try
-	{
-		xmlTable.LoadFile(tableFilename.c_str());
-	}
-	catch (const std::exception &e)
-	{
-		std::string msg = e.what();
-		throw std::invalid_argument("Failed to load xml-table:\n" + msg);
-	}
-
-	return CMealyTable(xmlTable);
-}
-
-void CreateDotFiles(const CMealyTable &table)
-{
-	CMealyTable minimizeTable = table.Minimize();
+	CMealyMachine minimizeTable = table.ToMinimize();
 }
