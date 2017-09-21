@@ -30,7 +30,26 @@ CMealyMachine CMealyMachine::ToMinimize() const
 
 std::string CMealyMachine::ToDotString() const
 {
-	return "";
+	std::stringstream stream;
+	CDotWriter writer(stream);
+
+	for (auto &state : m_statesMap)
+	{
+		writer.PrintVertex(state.second, state.first, StateType::Terminal);
+	}
+
+	for (auto &input : m_table)
+	{
+		auto inputEdges = input.second;
+		for (auto &edge : inputEdges)
+		{
+			const std::string & label = input.first + ", " + edge.out;
+			writer.PrintEdge(edge.index, edge.destIndex, label);
+		}
+	}
+
+	writer.~CDotWriter();
+	return stream.str();
 }
 
 // Collect all inputs and check duplicate

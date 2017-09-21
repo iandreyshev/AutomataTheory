@@ -1,0 +1,11 @@
+digraph G{
+0 [shape="doublecircle"label="a1"];
+1 [shape="doublecircle"label="a2"];
+2 [shape="doublecircle"label="a3"];
+0->0 [label="z1, w2 "];
+1->2 [label="z1, w2 "];
+2->0 [label="z1, w2 "];
+0->1 [label="z2, w1 "];
+1->0 [label="z2, w1 "];
+2->1 [label="z2, w2 "];
+}
