@@ -1,12 +1,26 @@
 <root>
-    <z1>
-        <a1 jump="a1" out="w2"></a1>
-        <a2 jump="a3" out="w2"></a2>
-        <a3 jump="a1" out="w2"></a3>
-    </z1>
-    <z2>
-        <a1 jump="a2" out="w1"></a1>
-        <a2 jump="a1" out="w1"></a2>
-        <a3 jump="a2" out="w2"></a3>
-    </z2>
+    <a>
+        <s0 jump="s2" out="a"></s0>
+        <s1 jump="s2" out="b"></s1>
+        <s2 jump="s2" out="b"></s2>
+        <s3 jump="s2" out="a"></s3>
+    </a>
+    <b>                            
+        <s0 jump="s0" out="a"></s0>
+        <s1 jump="s0" out="b"></s1>
+        <s2 jump="s0" out="b"></s2>
+        <s3 jump="s3" out="a"></s3>
+    </b>
+    <c>                            
+        <s0 jump="s0" out="a"></s0>
+        <s1 jump="s3" out="b"></s1>
+        <s2 jump="s3" out="b"></s2>
+        <s3 jump="s3" out="a"></s3>
+    </c>
+    <d>                            
+        <s0 jump="s0" out="a"></s0>
+        <s1 jump="s1" out="b"></s1>
+        <s2 jump="s1" out="b"></s2>
+        <s3 jump="s3" out="b"></s3>
+    </d>
 </root>

@@ -2,21 +2,16 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
+using DrawList = std::vector<sf::RectangleShape>;
+
 class CGraphVizualizer
 {
 public:
-	CGraphVizualizer() = delete;
-	CGraphVizualizer(const std::string &instanceName, const std::string &minimizeName);
-
-	void Draw();
+	void Draw(const std::string &graph);
+	void Draw(const std::string &firstGraph, const std::string &secondGraph);
 
 private:
-	sf::Texture m_firstTexture;
-	sf::Texture m_secondTexture;
-
-	sf::RectangleShape m_firstGraph;
-	sf::RectangleShape m_secondGraph;
-
-	void DrawingLoop(sf::RenderWindow &window);
+	sf::RectangleShape GetShape(const std::string &name, const sf::Vector2f &center, sf::Texture &texture);
+	void DrawingLoop(sf::RenderWindow &window, const DrawList &toDraw);
 	void ResizeGraph(sf::RectangleShape &graph);
 };

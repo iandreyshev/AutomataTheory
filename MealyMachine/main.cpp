@@ -24,15 +24,14 @@ int main()
 {
 	try
 	{
-		tinyxml2::XMLDocument xmlTable(true);
+		tinyxml2::XMLDocument xmlTable;
 		xmlTable.LoadFile(XML_TABLE);
 		CMealyMachine mealyMachine(xmlTable);
 
 		ConvertToImage(mealyMachine, INSTANCE_FILE);
-		ConvertToImage(mealyMachine, MINIMIZE_FILE);
 
-		CGraphVizualizer painter(INSTANCE_FILE + IMG_TYPE, MINIMIZE_FILE + IMG_TYPE);
-		painter.Draw();
+		CGraphVizualizer painter;
+		painter.Draw(INSTANCE_FILE + IMG_TYPE);
 	}
 	catch (const std::exception &e)
 	{

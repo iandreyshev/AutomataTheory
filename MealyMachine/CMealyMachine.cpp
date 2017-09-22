@@ -43,7 +43,7 @@ std::string CMealyMachine::ToDotString() const
 		auto inputEdges = input.second;
 		for (auto &edge : inputEdges)
 		{
-			const std::string & label = input.first + ", " + edge.out;
+			const std::string & label = "[" + input.first + ", " + edge.out + "]";
 			writer.PrintEdge(edge.index, edge.destIndex, label);
 		}
 	}
