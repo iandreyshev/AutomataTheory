@@ -55,6 +55,7 @@ sf::RectangleShape CGraphVizualizer::GetShape(
 	return shape;
 }
 
+
 void CGraphVizualizer::DrawingLoop(sf::RenderWindow &window, const DrawList &toDraw)
 {
 	while (window.isOpen())
@@ -68,12 +69,12 @@ void CGraphVizualizer::DrawingLoop(sf::RenderWindow &window, const DrawList &toD
 			}
 		}
 
+		window.display();
 		window.clear(sf::Color::White);
 		for (auto &drawObject : toDraw)
 		{
 			window.draw(drawObject);
 		}
-		window.display();
 	}
 }
 
