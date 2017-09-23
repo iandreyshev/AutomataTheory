@@ -1,8 +1,12 @@
 #include "CMealyMachine.h"
+#include <boost/algorithm/string.hpp>
 
 namespace
 {
-	const char* DEST_ATRIBUTE = "jump";
+	const char SEPARATOR = ',';
+	const char* START_ATTRIBUTE = "start";
+	const char* END_ATTRIBUTE = "end";
+	const char* DEST_ATRIBUTE = "dest";
 	const char* OUT_ATTRIBUTE = "out";
 }
 
@@ -11,11 +15,11 @@ CMealyMachine::CMealyMachine(const tinyxml2::XMLDocument &xmlTable)
 	Cleanup();
 
 	const tinyxml2::XMLElement* root = xmlTable.FirstChildElement();
-	XMLElementCollection inCollection = CUtils::GetAllChilds(root);
+	XMLElementCollection statesNodes = CUtils::GetAllChilds(root);
 
-	InitInputAlphabet(inCollection);
-	InitStatesCollection(inCollection);
-	InitTable(inCollection);
+	InitStates(statesNodes);
+	InitTable(statesNodes);
+	InitTerminals(root);
 }
 
 CMealyMachine::CMealyMachine(const MealyTable &table)
@@ -33,18 +37,21 @@ std::string CMealyMachine::ToDotString() const
 	std::stringstream stream;
 	CDotWriter writer(stream);
 
-	for (auto &state : m_statesMap)
+	for (auto &state : m_states)
 	{
-		writer.PrintVertex(state.second, state.first, StateType::Terminal);
+		StateType type = GetStateType(state.second);
+		writer.PrintVertex(state.second, state.first, type);
 	}
 
-	for (auto &input : m_table)
+	for (auto &state : m_table)
 	{
-		auto inputEdges = input.second;
-		for (auto &edge : inputEdges)
+		const auto &stateInputs = state.second;
+
+		for (auto &input : stateInputs)
 		{
-			const std::string & label = "[" + input.first + ", " + edge.out + "]";
-			writer.PrintEdge(edge.index, edge.destIndex, label);
+			const auto &edge = input.second;
+			const auto &label = "[" + input.first + ", " + edge.output + "]";
+			writer.PrintEdge(state.first, edge.destIndex, label);
 		}
 	}
 
@@ -52,68 +59,108 @@ std::string CMealyMachine::ToDotString() const
 	return stream.str();
 }
 
-// Collect all inputs and check duplicate
-void CMealyMachine::InitInputAlphabet(const XMLElementCollection &inCollection)
+void CMealyMachine::InitTerminals(const tinyxml2::XMLElement* root)
 {
-	for (auto &input : inCollection)
-	{
-		const std::string &value = input->Value();
-		if (m_table.find(value) != m_table.end())
+	auto get_states = [&](const std::string &attribute, std::set<size_t> &collection) {
+		const auto &attributeStr = root->Attribute(attribute.c_str());
+		std::vector<std::string> values = CUtils::Split(attributeStr, SEPARATOR);
+		if (values.empty())
 		{
-			throw std::invalid_argument(
-				"Invalid table formatting - duplicate input '" + value + "'.");
+			throw std::invalid_argument("The terminal states is not set.");
 		}
-		m_table.insert(std::make_pair(value, MealyNodesVec()));
-	}
+
+		for (auto val : values)
+		{
+			if (m_states.find(val) == m_states.end())
+			{
+				throw std::invalid_argument(
+					"Invalid arguments in " + attribute + " property.");
+			}
+			collection.insert(m_states.at(val));
+		}
+	};
+
+	get_states(START_ATTRIBUTE, m_start);
+	get_states(END_ATTRIBUTE, m_end);
 }
 
 // Read all states and collect them
-void CMealyMachine::InitStatesCollection(const XMLElementCollection &inCollection)
+void CMealyMachine::InitStates(const XMLElementCollection &statesNodes)
 {
 	size_t stateIndex = 0;
 
-	for (auto &input : inCollection)
+	for (auto &state : statesNodes)
 	{
-		XMLElementCollection allInputStates = CUtils::GetAllChilds(input);
-		for (auto &state : allInputStates)
+		const std::string &stateName = state->Value();
+		if (m_states.find(stateName) != m_states.end())
 		{
-			const std::string &stateName = state->Value();
-			if (m_statesMap.find(stateName) == m_statesMap.end())
+			throw std::invalid_argument("States duplicated.");
+		}
+
+		m_states.insert(std::make_pair(stateName, stateIndex));
+		stateIndex++;
+	}
+}
+
+// Collect all inputs and check duplicate
+void CMealyMachine::InitTable(const XMLElementCollection &statesNodes)
+{
+	for (auto &state : statesNodes)
+	{
+		for (auto &inputNode : CUtils::GetAllChilds(state))
+		{
+			const auto &inputName = inputNode->Value();
+			const auto &stateIndex = GetStateIndex(state->Value());
+
+			m_table.insert(std::make_pair(stateIndex, MealyInput()));
+			auto &stateEdges = m_table.at(stateIndex);
+
+			if (stateEdges.find(inputName) != stateEdges.end())
 			{
-				m_statesMap.insert(std::make_pair(stateName, stateIndex));
-				stateIndex++;
+				throw std::invalid_argument("The machine is not deterministic.");
 			}
+			const auto &destName = inputNode->Attribute(DEST_ATRIBUTE);
+			const auto &output = inputNode->Attribute(OUT_ATTRIBUTE);
+
+			if (m_states.find(destName) == m_states.end())
+			{
+				throw std::invalid_argument("Invalid destination state.");
+			}
+
+			MealyEdge edge = { m_states.at(destName), output };
+			stateEdges.insert(std::make_pair(inputName, edge));
 		}
 	}
 }
 
-void CMealyMachine::InitTable(const XMLElementCollection &inCollection)
+size_t CMealyMachine::GetStateIndex(const std::string &name) const
 {
-	for (auto &input : inCollection)
+	if (m_states.find(name) == m_states.end())
 	{
-		std::string inputValue = input->Value();
-		XMLElementCollection allInputStates = CUtils::GetAllChilds(input);
-		for (auto &state : allInputStates)
-		{
-			const std::string &stateName = state->Value();
-			const std::string &destState = state->Attribute(DEST_ATRIBUTE);
-			const std::string &output = state->Attribute(OUT_ATTRIBUTE);
-
-			if (m_statesMap.find(destState) == m_statesMap.end())
-			{
-				throw std::invalid_argument(
-					"Invalid destination state '" + destState + "'.");
-			}
-			const size_t &currIndex = m_statesMap.find(stateName)->second;
-			const size_t &destIndex = m_statesMap.find(destState)->second;
-			const MealyNode &newNode = { currIndex, destIndex, output };
-			m_table.find(inputValue)->second.push_back(newNode);
-		}
+		throw std::invalid_argument("Can not find state by name.");
 	}
+
+	return m_states.find(name)->second;
+}
+
+StateType CMealyMachine::GetStateType(size_t index) const
+{
+	if (m_start.find(index) != m_start.end())
+	{
+		return StateType::Initial;
+	}
+	else if (m_end.find(index) != m_end.end())
+	{
+		return StateType::Terminal;
+	}
+
+	return StateType::Nonterminal;
 }
 
 void CMealyMachine::Cleanup()
 {
 	m_table.clear();
-	m_statesMap.clear();
+	m_states.clear();
+	m_start.clear();
+	m_end.clear();
 }

@@ -1,4 +1,3 @@
-#include <string>
 #include <locale>
 #include <fstream>
 
@@ -40,7 +39,6 @@ int main()
 
 	return EXIT_SUCCESS;
 }
-
 
 void LoadXMLTable(tinyxml2::XMLDocument &table)
 {
