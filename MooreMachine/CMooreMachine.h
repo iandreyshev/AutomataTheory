@@ -1,27 +1,30 @@
 #pragma once
 #include <string>
-#include <set>
-#include <map>
+#include <unordered_map>
+#include <fstream>
+#include "CUtils.h"
 #include "libs/tinyxml2/tinyxml2.h"
 
-struct MooreNode
+struct MooreTable
 {
-	size_t index;
-	std::string output;
+	std::unordered_map<size_t, size_t> states;
+	std::unordered_map<size_t, std::vector<size_t>> input;
 };
 
 class CMooreMachine
 {
 public:
 	CMooreMachine() = delete;
-	CMooreMachine(const tinyxml2::XMLDocument &table);
+	CMooreMachine(std::ifstream &input);
+	//CMooreMachine(const tinyxml2::XMLDocument &table);
 
 	bool Minimize();
+	std::string ToString();
 	std::string ToDotString();
-private:
-	std::set<size_t> m_startStates;
-	std::set<size_t> m_endStates;
-	std::map<std::string, size_t> m_statesIndexes;
-	std::map<size_t, std::string> m_statesOuts;
+private://equivalence
+	MooreTable m_table;
+
+	static bool ToZeroEquClass(MooreTable &table);
+	static bool ToNextEquClass(MooreTable &table);
 
 };

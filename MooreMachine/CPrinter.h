@@ -8,8 +8,8 @@ class CPrinter
 {
 public:
 	CPrinter() = delete;
-	static void Draw(const std::string &graph);
-	static void Draw(const std::string &firstGraph, const std::string &secondGraph);
+	static void Draw(const std::string &centerGraph);
+	static void Draw(const std::string &leftGraph, const std::string &rightGraph);
 
 private:
 	static sf::RectangleShape GetShape(const std::string &name, const sf::Vector2f &center, sf::Texture &texture);

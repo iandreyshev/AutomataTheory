@@ -4,35 +4,35 @@
 
 namespace
 {
-	const sf::Vector2f WINDOW_SIZE = { 1024, 640 };
-	const sf::Vector2f WINDOW_CENTER = WINDOW_SIZE * 0.5f;
-	const sf::Vector2f FIRST_GRAPH_CENTER = {
-		WINDOW_SIZE.x / 4, WINDOW_SIZE.y / 2
+	const sf::Vector2f WIN_SIZE = { 1024, 640 };
+	const sf::Vector2f WINDOW_CENTER = WIN_SIZE * 0.5f;
+	const sf::Vector2f LEFT_GRAPH_CENTER = {
+		WIN_SIZE.x / 4, WIN_SIZE.y / 2
 	};
-	const sf::Vector2f SECOND_GRAPH_CENTER = {
-		3 * FIRST_GRAPH_CENTER.x, FIRST_GRAPH_CENTER.y
+	const sf::Vector2f RIGHT_GRAPH_CENTER = {
+		3 * LEFT_GRAPH_CENTER.x, LEFT_GRAPH_CENTER.y
 	};
 }
 
-void CPrinter::Draw(const std::string &graph)
+void CPrinter::Draw(const std::string &centerGraph)
 {
-	sf::VideoMode mode = sf::VideoMode((unsigned)WINDOW_SIZE.x, (unsigned)WINDOW_SIZE.y);
+	sf::VideoMode mode = sf::VideoMode((unsigned)WIN_SIZE.x, (unsigned)WIN_SIZE.y);
 	sf::RenderWindow window(mode, "", sf::Style::Titlebar | sf::Style::Close);
 
 	sf::Texture texture;
-	DrawingLoop(window, { GetShape(graph, WINDOW_CENTER, texture) });
+	DrawingLoop(window, { GetShape(centerGraph, WINDOW_CENTER, texture) });
 }
 
-void CPrinter::Draw(const std::string &first, const std::string &second)
+void CPrinter::Draw(const std::string &leftGraph, const std::string &rightGraph)
 {
-	sf::VideoMode mode = sf::VideoMode((unsigned)WINDOW_SIZE.x, (unsigned)WINDOW_SIZE.y);
+	sf::VideoMode mode = sf::VideoMode((unsigned)WIN_SIZE.x, (unsigned)WIN_SIZE.y);
 	sf::RenderWindow window(mode, "", sf::Style::Titlebar | sf::Style::Close);
 
-	sf::Texture firstTexture;
-	sf::Texture secondTexture;
+	sf::Texture leftGraphTexture;
+	sf::Texture rightGraphTexture;
 	DrawingLoop( window, {
-			GetShape(first, FIRST_GRAPH_CENTER, firstTexture),
-			GetShape(second, SECOND_GRAPH_CENTER, secondTexture)
+			GetShape(leftGraph, LEFT_GRAPH_CENTER, leftGraphTexture),
+			GetShape(rightGraph, RIGHT_GRAPH_CENTER, rightGraphTexture)
 		});
 }
 
@@ -54,7 +54,6 @@ sf::RectangleShape CPrinter::GetShape(
 	shape.setPosition(center - offset);
 	return shape;
 }
-
 
 void CPrinter::DrawingLoop(sf::RenderWindow &window, const DrawList &toDraw)
 {
@@ -85,10 +84,10 @@ void CPrinter::ResizeGraph(sf::RectangleShape &graph)
 	const float& sizeFactor = size.x / size.y;
 	graph.setSize(size);
 
-	size.x = (size.x > WINDOW_SIZE.x / 2) ? WINDOW_SIZE.x / 2 : size.x;
+	size.x = (size.x > WIN_SIZE.x / 2) ? WIN_SIZE.x / 2 : size.x;
 	size.y = size.x / sizeFactor;
 
-	size.y = (size.y > WINDOW_SIZE.y) ? WINDOW_SIZE.y : size.y;
+	size.y = (size.y > WIN_SIZE.y) ? WIN_SIZE.y : size.y;
 	size.x = size.y * sizeFactor;
 
 	graph.setSize(size);

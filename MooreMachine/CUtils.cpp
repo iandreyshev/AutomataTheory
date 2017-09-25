@@ -68,6 +68,11 @@ bool CUtils::RunProcess(const std::string &command)
 
 XMLElementCollection CUtils::GetAllChilds(const tinyxml2::XMLElement* parent)
 {
+	if (!parent)
+	{
+		throw std::invalid_argument("CUtils::GetAllChilds: parent node is nullptr.");
+	}
+
 	const tinyxml2::XMLElement* child = parent->FirstChildElement();
 	std::vector<const tinyxml2::XMLElement*> collection;
 	while (child)
@@ -78,13 +83,12 @@ XMLElementCollection CUtils::GetAllChilds(const tinyxml2::XMLElement* parent)
 	return collection;
 }
 
-std::vector<std::string> CUtils::Split(const std::string &str, char separator)
+std::vector<std::string> CUtils::SplitString(const std::string &str, char separator)
 {
 	std::vector<std::string> result;
 	std::string newStr;
 
-	auto push_if = [&]() {
-		if (newStr.empty()) return;
+	auto push_newStr = [&]() {
 		result.push_back(newStr);
 		newStr = "";
 	};
@@ -93,12 +97,12 @@ std::vector<std::string> CUtils::Split(const std::string &str, char separator)
 	{
 		if (ch == separator)
 		{
-			push_if();
+			push_newStr();
 			continue;
 		}
 		newStr += ch;
 	}
 
-	push_if();
+	push_newStr();
 	return result;
 }
