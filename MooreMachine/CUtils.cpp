@@ -88,7 +88,8 @@ std::vector<std::string> CUtils::SplitString(const std::string &str, char separa
 	std::vector<std::string> result;
 	std::string newStr;
 
-	auto push_newStr = [&]() {
+	auto push = [&]() {
+		if (newStr.empty()) return;
 		result.push_back(newStr);
 		newStr = "";
 	};
@@ -97,12 +98,12 @@ std::vector<std::string> CUtils::SplitString(const std::string &str, char separa
 	{
 		if (ch == separator)
 		{
-			push_newStr();
+			push();
 			continue;
 		}
 		newStr += ch;
 	}
 
-	push_newStr();
+	push();
 	return result;
 }

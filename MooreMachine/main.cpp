@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
 
 		std::ifstream input(argv[1]);
 		CMooreMachine machine(input);
+		//machine.ToMinimize();
 	}
 	catch (const std::exception &e)
 	{

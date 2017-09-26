@@ -3,64 +3,102 @@
 namespace
 {
 	const char CSV_SEPARATOR = ';';
+	const size_t HEADER_ROWS = 2;
+	const size_t MIN_STATES_COUNT = 1;
+	const size_t MIN_TRANSFERS_COUNT = 1;
 }
 
 CMooreMachine::CMooreMachine(std::ifstream &input)
 {
-	std::string outputStr;
-	std::string stateStr;
-	getline(input, outputStr);
-	getline(input, stateStr);
+	auto row_to_vect = [&]() -> std::vector<size_t> {
+		std::vector<size_t> result;
+		std::string str;
+		getline(input, str);
+		auto rowIds = CUtils::SplitString(str, CSV_SEPARATOR);
+		for (auto idStr : rowIds) result.push_back(std::atoi(idStr.c_str()));
+		return result;
+	};
 
-	auto outputs = CUtils::SplitString(outputStr, CSV_SEPARATOR);
-	auto states = CUtils::SplitString(stateStr, CSV_SEPARATOR);
+	auto outputs = row_to_vect();
+	auto states = row_to_vect();
+	InitHeader({ outputs, states });
+
+	Table transfers;
+	auto transferRow = row_to_vect();
+
+	while (!transferRow.empty())
+	{
+		transfers.push_back(transferRow);
+		transferRow = row_to_vect();
+	}
+
+	InitTransfers(transfers);
+}
+
+void CMooreMachine::InitHeader(const Table &tableHeader)
+{
+	auto throw_invalid_arg_if = [](bool predicate, const auto &message) {
+		if (predicate) throw std::invalid_argument(message);
+	};
+
+	throw_invalid_arg_if(
+		tableHeader.size() != HEADER_ROWS,
+		"Invalid header size.");
+
+	const auto &outs = tableHeader[0];
+	const auto &states = tableHeader[1];
+
+	throw_invalid_arg_if(
+		outs.size() != states.size(),
+		"States count not equal outputs count.");
+
+	throw_invalid_arg_if(
+		states.size() < MIN_STATES_COUNT,
+		"States count less than " + std::to_string(MIN_STATES_COUNT) + ".");
 
 	for (size_t i = 1; i < states.size(); ++i)
 	{
-		size_t stateNum = std::atoi(states[i].c_str());
-		size_t outNum = std::atoi(outputs[i].c_str());
-		m_table.states.insert(std::make_pair(stateNum, outNum));
+		throw_invalid_arg_if(
+			m_instStates.find(states[i]) != m_instStates.end(),
+			"Duplicate states in header not allowed.");
+		m_instStates.insert(std::make_pair(states[i], outs[i]));
 	}
+}
 
-	std::string inputStr;
-	while (getline(input, inputStr))
+void CMooreMachine::InitTransfers(const Table &transfersTable)
+{
+	auto throw_invalid_arg_if = [](bool predicate, const auto &message) {
+		if (predicate) throw std::invalid_argument(message);
+	};
+
+	throw_invalid_arg_if(
+		transfersTable.size() < MIN_TRANSFERS_COUNT,
+		"Transfers less than " + std::to_string(MIN_TRANSFERS_COUNT));
+	
+	size_t rowIndex = 0;
+	for (auto transferRow : transfersTable)
 	{
-		auto inputRow = CUtils::SplitString(inputStr, CSV_SEPARATOR);
-		size_t inputId = std::atoi(inputRow[0].c_str());
-		for (size_t i = 1; i < inputRow.size(); ++i)
+		const auto &transfersCount = transferRow.size() - 1;
+		throw_invalid_arg_if(
+			transfersCount < m_instStates.size(),
+			"Transfers count less than states count.");
+		m_transfer.push_back(std::vector<size_t>());
+
+		for (size_t i = 1; i < transferRow.size(); ++i)
 		{
-			if (m_table.input.find(inputId) == m_table.input.end())
-			{
-				m_table.input.insert(std::make_pair(inputId, std::vector<size_t>()));
-			}
-
-			size_t stateId = std::atoi(inputRow[i].c_str());
-			m_table.input.find(inputId)->second.push_back(stateId);
+			throw_invalid_arg_if(
+				m_instStates.find(transferRow[i]) == m_instStates.end(),
+				"Transfer state not found in states list.");
+			m_transfer[rowIndex].push_back(transferRow[i]);
 		}
+		rowIndex++;
 	}
 }
 
-bool CMooreMachine::Minimize()
+bool CMooreMachine::ToMinimize()
 {
-	MooreTable zeroEquTable = m_table;
-	bool isMinimize = ToZeroEquClass(zeroEquTable);
-
-	while (isMinimize)
-	{
-		isMinimize = ToNextEquClass(m_table);
-	}
-
+	bool isMinimize = false;
 	return isMinimize;
-}
-
-bool CMooreMachine::ToZeroEquClass(MooreTable &table)
-{
-	return true;
-}
-
-bool CMooreMachine::ToNextEquClass(MooreTable &table)
-{
-	return true;
 }
 
 std::string CMooreMachine::ToDotString()
@@ -72,4 +110,10 @@ std::string CMooreMachine::ToString()
 {
 	std::string result;
 	return result;
+}
+
+void CMooreMachine::Cleanup()
+{
+	m_instStates.clear();
+	m_transfer.clear();
 }
