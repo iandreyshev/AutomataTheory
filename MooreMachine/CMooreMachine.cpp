@@ -6,6 +6,10 @@ namespace
 	const size_t HEADER_ROWS = 2;
 	const size_t MIN_STATES_COUNT = 1;
 	const size_t MIN_TRANSFERS_COUNT = 1;
+
+	auto throw_invalid_arg_if = [](bool predicate, const auto &message) {
+		if (predicate) throw std::invalid_argument(message);
+	};
 }
 
 CMooreMachine::CMooreMachine(std::ifstream &input)
@@ -16,12 +20,12 @@ CMooreMachine::CMooreMachine(std::ifstream &input)
 		getline(input, str);
 		auto rowIds = CUtils::SplitString(str, CSV_SEPARATOR);
 		for (auto idStr : rowIds) result.push_back(std::atoi(idStr.c_str()));
+		if (result.size() > 0) result.erase(result.begin()); // FIX THIS!
 		return result;
 	};
 
-	auto outputs = row_to_vect();
-	auto states = row_to_vect();
-	InitHeader({ outputs, states });
+	const Table &header = { row_to_vect(), row_to_vect() };
+	InitStates(header);
 
 	Table transfers;
 	auto transferRow = row_to_vect();
@@ -32,21 +36,17 @@ CMooreMachine::CMooreMachine(std::ifstream &input)
 		transferRow = row_to_vect();
 	}
 
-	InitTransfers(transfers);
+	InitFullTable(header, transfers);
 }
 
-void CMooreMachine::InitHeader(const Table &tableHeader)
+void CMooreMachine::InitStates(const Table &header)
 {
-	auto throw_invalid_arg_if = [](bool predicate, const auto &message) {
-		if (predicate) throw std::invalid_argument(message);
-	};
-
 	throw_invalid_arg_if(
-		tableHeader.size() != HEADER_ROWS,
+		header.size() != HEADER_ROWS,
 		"Invalid header size.");
 
-	const auto &outs = tableHeader[0];
-	const auto &states = tableHeader[1];
+	const auto &outs = header[0];
+	const auto &states = header[1];
 
 	throw_invalid_arg_if(
 		outs.size() != states.size(),
@@ -56,54 +56,131 @@ void CMooreMachine::InitHeader(const Table &tableHeader)
 		states.size() < MIN_STATES_COUNT,
 		"States count less than " + std::to_string(MIN_STATES_COUNT) + ".");
 
-	for (size_t i = 1; i < states.size(); ++i)
+	for (size_t i = 0; i < states.size(); ++i)
 	{
 		throw_invalid_arg_if(
-			m_instStates.find(states[i]) != m_instStates.end(),
+			m_states.find(states[i]) != m_states.end(),
 			"Duplicate states in header not allowed.");
-		m_instStates.insert(std::make_pair(states[i], outs[i]));
+		m_states.insert(std::make_pair(states[i], outs[i]));
 	}
 }
 
-void CMooreMachine::InitTransfers(const Table &transfersTable)
+void CMooreMachine::InitFullTable(const Table &header, const Table &transfers)
 {
-	auto throw_invalid_arg_if = [](bool predicate, const auto &message) {
-		if (predicate) throw std::invalid_argument(message);
-	};
-
 	throw_invalid_arg_if(
-		transfersTable.size() < MIN_TRANSFERS_COUNT,
+		transfers.size() < MIN_TRANSFERS_COUNT,
 		"Transfers less than " + std::to_string(MIN_TRANSFERS_COUNT));
 	
-	size_t rowIndex = 0;
-	for (auto transferRow : transfersTable)
-	{
-		const auto &transfersCount = transferRow.size() - 1;
-		throw_invalid_arg_if(
-			transfersCount < m_instStates.size(),
-			"Transfers count less than states count.");
-		m_transfer.push_back(std::vector<size_t>());
+	m_table.push_back(header[0]);
+	m_table.push_back(header[1]);
 
-		for (size_t i = 1; i < transferRow.size(); ++i)
+	for (auto transfer : transfers)
+	{
+		throw_invalid_arg_if(
+			transfer.size() < m_states.size(),
+			"Transfers count less than states count.");
+		m_table.push_back(std::vector<size_t>());
+
+		for (size_t i = 0; i < transfer.size(); ++i)
 		{
 			throw_invalid_arg_if(
-				m_instStates.find(transferRow[i]) == m_instStates.end(),
+				m_states.find(transfer[i]) == m_states.end(),
 				"Transfer state not found in states list.");
-			m_transfer[rowIndex].push_back(transferRow[i]);
+			m_table.back().push_back(transfer[i]);
 		}
-		rowIndex++;
 	}
 }
 
-bool CMooreMachine::ToMinimize()
+bool CMooreMachine::Minimize()
 {
-	bool isMinimize = false;
-	return isMinimize;
+	Table table = ZeroMinimize();
+	Dictionary states = m_states;
+	size_t convertsCount = 0;
+
+	while (true)
+	{
+		auto str = CUtils::MatrixToStr(table);
+		Table tableCopy = table;
+		Dictionary statesCopy = states;
+		NextMinimize(table, states);
+		if (table == tableCopy && states == statesCopy)
+		{
+			break;
+		}
+		convertsCount++;
+	}
+
+	auto str = CUtils::MatrixToStr(table);
+	return convertsCount > 0;
+}
+
+Table CMooreMachine::ZeroMinimize()
+{
+	Table result = m_table;
+
+	for (size_t i = 2; i < result.size(); ++i)
+	{
+		for (size_t j = 0; j < result[i].size(); ++j)
+		{
+			const auto &instanceTransfer = m_table[i][j];
+			result[i][j] = m_states.find(instanceTransfer)->second;
+		}
+	}
+
+	return result;
+}
+
+void CMooreMachine::NextMinimize(Table &table, Dictionary &states)
+{
+	auto to_hash = [&](size_t coll) -> std::string {
+		const auto &state = table[1][coll];
+		std::string result = std::to_string(states.find(state)->second);
+		for (size_t row = 2; row < table.size(); ++row)
+			result += std::to_string(table[row][coll]);
+		return result;
+	};
+
+	std::unordered_map<std::string, size_t> stateIndexesByHash;
+	std::vector<std::vector<size_t>> stateIndexes;
+
+	auto add_hash_if = [&](const std::string hash, size_t newState) {
+		if (stateIndexesByHash.find(hash) != stateIndexesByHash.end())
+		{
+			const auto &statesIndex = stateIndexesByHash.find(hash)->second;
+			stateIndexes[statesIndex].push_back(newState);
+			return;
+		}
+		stateIndexes.push_back(std::vector<size_t>());
+		stateIndexes.back().push_back(newState);
+		stateIndexesByHash.insert(std::make_pair(hash, stateIndexes.size() - 1));
+	};
+
+	for (size_t i = 0; i < m_table.front().size(); ++i)
+	{
+		add_hash_if(to_hash(i), table[1][i]);
+	}
+
+	for (size_t i = 0; i < stateIndexes.size(); ++i)
+	{
+		for (size_t j = 0; j < stateIndexes[i].size(); ++j)
+		{
+			states.find(stateIndexes[i][j])->second = i + 1;
+		}
+	}
+
+	for (size_t i = 2; i < table.size(); ++i)
+	{
+		for (size_t j = 0; j < table[i].size(); ++j)
+		{
+			const auto &instanceTransfer = m_table[i][j];
+			table[i][j] = states.find(instanceTransfer)->second;
+		}
+	}
 }
 
 std::string CMooreMachine::ToDotString()
 {
-	return "";
+	return std::string();
 }
 
 std::string CMooreMachine::ToString()
@@ -114,6 +191,6 @@ std::string CMooreMachine::ToString()
 
 void CMooreMachine::Cleanup()
 {
-	m_instStates.clear();
-	m_transfer.clear();
+	m_states.clear();
+	m_table.clear();
 }

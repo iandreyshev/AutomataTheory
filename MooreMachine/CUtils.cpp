@@ -107,3 +107,19 @@ std::vector<std::string> CUtils::SplitString(const std::string &str, char separa
 	push();
 	return result;
 }
+
+std::string CUtils::MatrixToStr(const Matrix &matrix)
+{
+	std::string result;
+
+	for (auto matrixRow : matrix)
+	{
+		for (auto matrixElement : matrixRow)
+		{
+			result += std::to_string(matrixElement) + " ";
+		}
+		result += '\n';
+	}
+
+	return result;
+}

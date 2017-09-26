@@ -8,7 +8,7 @@
 #include "libs/tinyxml2/tinyxml2.h"
 
 using Table = std::vector<std::vector<size_t>>;
-using IndexCollection = std::unordered_map<size_t, std::vector<size_t>>;
+using Dictionary = std::unordered_map<size_t, size_t>;
 
 class CMooreMachine
 {
@@ -16,16 +16,18 @@ public:
 	CMooreMachine() = delete;
 	CMooreMachine(std::ifstream &input);
 
-	bool ToMinimize();
+	bool Minimize();
 	std::string ToString();
 	std::string ToDotString();
 private:
-	void InitHeader(const Table &tableHeader);
-	void InitTransfers(const Table &transfersTable);
+	void InitStates(const Table &header);
+	void InitFullTable(const Table &tableHeader, const Table &transfersTable);
+
+	Table ZeroMinimize();
+	void NextMinimize(Table &transfers, Dictionary &states);
 
 	void Cleanup();
 
-	std::unordered_map<size_t, size_t> m_instStates;
-	Table m_transfer;
-
+	Dictionary m_states;
+	Table m_table;
 };
