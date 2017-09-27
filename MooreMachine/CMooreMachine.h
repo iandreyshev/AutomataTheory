@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 #include <fstream>
 #include <algorithm>
 #include "CUtils.h"
@@ -24,7 +24,8 @@ private:
 	void InitFullTable(const Table &tableHeader, const Table &transfersTable);
 
 	Table ZeroMinimize();
-	void NextMinimize(Table &transfers, Dictionary &states);
+	void NextMinimize(Table &table, Dictionary &states);
+	void Decompose(Table &table, Dictionary &states);
 
 	void Cleanup();
 

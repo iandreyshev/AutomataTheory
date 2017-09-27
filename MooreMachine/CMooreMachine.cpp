@@ -95,11 +95,10 @@ bool CMooreMachine::Minimize()
 {
 	Table table = ZeroMinimize();
 	Dictionary states = m_states;
-	size_t convertsCount = 0;
+	bool isMinimizeComplete = false;
 
 	while (true)
 	{
-		auto str = CUtils::MatrixToStr(table);
 		Table tableCopy = table;
 		Dictionary statesCopy = states;
 		NextMinimize(table, states);
@@ -107,11 +106,17 @@ bool CMooreMachine::Minimize()
 		{
 			break;
 		}
-		convertsCount++;
+		isMinimizeComplete = true;
 	}
 
-	auto str = CUtils::MatrixToStr(table);
-	return convertsCount > 0;
+	if (isMinimizeComplete)
+	{
+		Decompose(table, states);
+		m_table = table;
+		m_states = states;
+	}
+
+	return isMinimizeComplete;
 }
 
 Table CMooreMachine::ZeroMinimize()
@@ -128,6 +133,38 @@ Table CMooreMachine::ZeroMinimize()
 	}
 
 	return result;
+}
+
+void CMooreMachine::Decompose(Table &table, Dictionary &states)
+{
+	std::unordered_map<size_t, size_t> uniqueClasses;
+
+	for (size_t i = 0; i < table[1].size(); ++i)
+	{
+		const auto &newClass = states.find(table[1][i]);
+		table[0][i] = newClass->second;
+		uniqueClasses.insert(std::make_pair(newClass->second, newClass->first));
+	}
+
+	Table newTable = std::vector<std::vector<size_t>>(table.size());
+	for (auto &row : newTable)
+	{
+		row.resize(uniqueClasses.size());
+	}
+	for (size_t i = 0; i < newTable[1].size(); i++)
+	{
+		const auto &newState = i + 1;
+		newTable[1][i] = newState;
+		newTable[0][i] = m_states.find(newState)->second;
+	}
+
+	for (size_t i = 2; i < newTable.size(); ++i)
+	{
+		for (auto &transfer : newTable[i])
+		{
+
+		}
+	}
 }
 
 void CMooreMachine::NextMinimize(Table &table, Dictionary &states)
