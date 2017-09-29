@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Tinyxml2">
-      <UniqueIdentifier>{38d198b3-cc59-4828-9f31-61ee73311209}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -26,9 +23,6 @@
     </ClCompile>
     <ClCompile Include="CUtils.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="libs\tinyxml2\tinyxml2.cpp">
-      <Filter>Tinyxml2</Filter>
     </ClCompile>
     <ClCompile Include="CPrinter.cpp">
       <Filter>Source Files</Filter>
@@ -43,9 +37,6 @@
     </ClInclude>
     <ClInclude Include="CUtils.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\tinyxml2\tinyxml2.h">
-      <Filter>Tinyxml2</Filter>
     </ClInclude>
     <ClInclude Include="CPrinter.h">
       <Filter>Header Files</Filter>

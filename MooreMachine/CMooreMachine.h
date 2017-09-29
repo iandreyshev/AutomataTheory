@@ -5,8 +5,10 @@
 #include <map>
 #include <fstream>
 #include <algorithm>
+#include <sstream>
+
+#include "CDotWriter.h"
 #include "CUtils.h"
-#include "libs/tinyxml2/tinyxml2.h"
 
 using IdList = std::vector<size_t>;
 using Table = std::vector<IdList>;
@@ -20,8 +22,8 @@ public:
 	CMooreMachine(std::ifstream &input);
 
 	bool Minimize();
-	std::string ToString();
-	std::string ToDotString();
+	std::string ToString() const;
+	std::string ToDotString() const;
 private:
 	void InitStates(const Table &header);
 	void InitFullTable(const Table &tableHeader, const Table &transfersTable);

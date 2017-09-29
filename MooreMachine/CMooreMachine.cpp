@@ -130,8 +130,6 @@ bool CMooreMachine::Minimize()
 	if (isMinimizeComplete)
 	{
 		CreateNewTable(table, states);
-		m_table = table;
-		m_classesByStates = states;
 	}
 
 	return isMinimizeComplete;
@@ -231,14 +229,37 @@ void CMooreMachine::CreateNewTable(Table &table, Dictionary &classByStates)
 			newTable[j][i] = classByStates.at(transferState);
 		}
 	}
+
+	m_table = newTable;
+	m_classesByStates = classByStates;
+	InitTransfersMap();
 }
 
-std::string CMooreMachine::ToDotString()
+std::string CMooreMachine::ToDotString() const
 {
-	return std::string();
+	std::stringstream stream;
+	CDotWriter writer(stream);
+
+	for (size_t i = 0; i < m_table.front().size(); ++i)
+	{
+		const auto out = m_table[0][i];
+		const auto state = m_table[1][i];
+		const auto label = "s" + std::to_string(state) + " / y" + std::to_string(out);
+		writer.PrintVertex(state, label, StateType::Nonterminal);
+
+		for (size_t j = 2; j < m_table.size(); ++j)
+		{
+			const auto edgeLabel = "x" + std::to_string(j - 1);
+			writer.PrintEdge(state, m_table[j][i], edgeLabel);
+		}
+	}
+
+	writer.~CDotWriter();
+
+	return stream.str();
 }
 
-std::string CMooreMachine::ToString()
+std::string CMooreMachine::ToString() const
 {
 	std::string result;
 	return result;

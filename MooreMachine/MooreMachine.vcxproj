@@ -123,14 +123,12 @@
     <ClCompile Include="CMooreMachine.cpp" />
     <ClCompile Include="CPrinter.cpp" />
     <ClCompile Include="CUtils.cpp" />
-    <ClCompile Include="libs\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDotWriter.h" />
     <ClInclude Include="CPrinter.h" />
     <ClInclude Include="CUtils.h" />
-    <ClInclude Include="libs\tinyxml2\tinyxml2.h" />
     <ClInclude Include="CMooreMachine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

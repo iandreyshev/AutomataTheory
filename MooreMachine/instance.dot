@@ -1,0 +1,23 @@
+digraph G{
+1 [shape="box"label="s1 / y1"];
+1->5 [label="x1 "];
+1->7 [label="x2 "];
+2 [shape="box"label="s2 / y2"];
+2->4 [label="x1 "];
+2->1 [label="x2 "];
+3 [shape="box"label="s3 / y3"];
+3->5 [label="x1 "];
+3->4 [label="x2 "];
+4 [shape="box"label="s4 / y1"];
+4->3 [label="x1 "];
+4->2 [label="x2 "];
+5 [shape="box"label="s5 / y2"];
+5->4 [label="x1 "];
+5->1 [label="x2 "];
+6 [shape="box"label="s6 / y2"];
+6->2 [label="x1 "];
+6->3 [label="x2 "];
+7 [shape="box"label="s7 / y3"];
+7->5 [label="x1 "];
+7->4 [label="x2 "];
+}
