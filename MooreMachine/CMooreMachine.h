@@ -2,13 +2,16 @@
 #include <string>
 #include <unordered_map>
 #include <set>
+#include <map>
 #include <fstream>
 #include <algorithm>
 #include "CUtils.h"
 #include "libs/tinyxml2/tinyxml2.h"
 
-using Table = std::vector<std::vector<size_t>>;
+using IdList = std::vector<size_t>;
+using Table = std::vector<IdList>;
 using Dictionary = std::unordered_map<size_t, size_t>;
+using DictionaryList = std::unordered_map<size_t, IdList>;
 
 class CMooreMachine
 {
@@ -22,13 +25,15 @@ public:
 private:
 	void InitStates(const Table &header);
 	void InitFullTable(const Table &tableHeader, const Table &transfersTable);
+	void InitTransfersMap();
 
 	Table ZeroMinimize();
 	void NextMinimize(Table &table, Dictionary &states);
-	void Decompose(Table &table, Dictionary &states);
+	void CreateNewTable(Table &table, Dictionary &states);
 
 	void Cleanup();
 
-	Dictionary m_states;
+	Dictionary m_classesByStates;
+	DictionaryList m_transfersByState;
 	Table m_table;
 };
