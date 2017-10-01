@@ -21,13 +21,13 @@
     <ClCompile Include="CDotWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CPrinter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CMooreMachine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,13 +35,16 @@
     <ClInclude Include="CDotWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CMooreMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

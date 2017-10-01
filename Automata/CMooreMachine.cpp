@@ -4,6 +4,9 @@ namespace
 {
 	const char CSV_SEPARATOR = ';';
 	const char HASH_SEPARATOR = '|';
+	const std::string STATE_NAME = "s";
+	const std::string OUT_NAME = "o";
+	const std::string INPUT_NAME = "x";
 	const size_t HEADER_ROWS = 2;
 	const size_t MIN_STATES_COUNT = 1;
 	const size_t MIN_TRANSFERS_COUNT = 1;
@@ -25,6 +28,7 @@ CMooreMachine::CMooreMachine(std::ifstream &input)
 
 	while (!transfersRow.empty())
 	{
+		transfersRow.erase(transfersRow.begin());
 		transfers.push_back(transfersRow);
 		transfersRow = Utils::RowToVect<size_t>(input);
 	}
@@ -230,12 +234,14 @@ std::string CMooreMachine::ToDotString() const
 	{
 		const auto out = m_table[0][i];
 		const auto state = m_table[1][i];
-		const auto label = "s" + std::to_string(state) + " / y" + std::to_string(out);
-		writer.PrintVertex(state, label, StateType::Nonterminal);
+		const auto label =
+			STATE_NAME + std::to_string(state) + " / " +
+			OUT_NAME + std::to_string(out);
+		writer.PrintVertex(state, label, StateType::Initial);
 
 		for (size_t j = 2; j < m_table.size(); ++j)
 		{
-			const auto edgeLabel = "x" + std::to_string(j - 1);
+			const auto edgeLabel = INPUT_NAME + std::to_string(j - 1);
 			writer.PrintEdge(state, m_table[j][i], edgeLabel);
 		}
 	}

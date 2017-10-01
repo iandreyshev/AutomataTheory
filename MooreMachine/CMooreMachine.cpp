@@ -3,6 +3,7 @@
 namespace
 {
 	const char CSV_SEPARATOR = ';';
+	const char HASH_SEPARATOR = '|';
 	const size_t HEADER_ROWS = 2;
 	const size_t MIN_STATES_COUNT = 1;
 	const size_t MIN_TRANSFERS_COUNT = 1;
@@ -16,11 +17,6 @@ CMooreMachine::CMooreMachine(std::ifstream &input)
 {
 	auto row_to_list = [&](bool isEraseFirst = true) -> IdList {
 		IdList result;
-		std::string str;
-		getline(input, str);
-		auto strItems = CUtils::SplitString(str, CSV_SEPARATOR);
-		for (auto item : strItems) result.push_back(std::atoi(item.c_str()));
-		if (isEraseFirst = true && !result.empty()) result.erase(result.begin());
 		return result;
 	};
 
@@ -98,7 +94,7 @@ void CMooreMachine::InitTransfersMap()
 
 	for (size_t i = 0; i < m_table[1].size(); ++i)
 	{
-		const auto &state = m_table[1][i];
+		const auto state = m_table[1][i];
 
 		for (size_t j = 2; j < m_table.size(); ++j)
 		{
@@ -143,7 +139,7 @@ Table CMooreMachine::ZeroMinimize()
 	{
 		for (size_t j = 0; j < result[i].size(); ++j)
 		{
-			const auto &instanceTransfer = m_table[i][j];
+			const auto instanceTransfer = m_table[i][j];
 			result[i][j] = m_classesByStates.find(instanceTransfer)->second;
 		}
 	}
@@ -157,7 +153,7 @@ void CMooreMachine::NextMinimize(Table &table, Dictionary &states)
 		const auto &state = table[1][coll];
 		std::string result = std::to_string(states.find(state)->second);
 		for (size_t row = 2; row < table.size(); ++row)
-			result += std::to_string(table[row][coll]);
+			result += HASH_SEPARATOR + std::to_string(table[row][coll]);
 		return result;
 	};
 
@@ -167,7 +163,7 @@ void CMooreMachine::NextMinimize(Table &table, Dictionary &states)
 	auto add_hash_if = [&](const std::string hash, size_t newState) {
 		if (stateIndexesByHash.find(hash) != stateIndexesByHash.end())
 		{
-			const auto &statesIndex = stateIndexesByHash.find(hash)->second;
+			const auto statesIndex = stateIndexesByHash.find(hash)->second;
 			stateIndexes[statesIndex].push_back(newState);
 			return;
 		}
@@ -193,7 +189,7 @@ void CMooreMachine::NextMinimize(Table &table, Dictionary &states)
 	{
 		for (size_t j = 0; j < table[i].size(); ++j)
 		{
-			const auto &instanceTransfer = m_table[i][j];
+			const auto instanceTransfer = m_table[i][j];
 			table[i][j] = states.find(instanceTransfer)->second;
 		}
 	}

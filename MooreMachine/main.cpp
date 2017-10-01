@@ -1,43 +1,45 @@
 #include "CMooreMachine.h"
-#include "CDotWriter.h"
 #include "CPrinter.h"
+#include "Utils.h"
+#include "CCommandHandler.h"
 
-#include <cstdio>
-#include <string>
-#include <fstream>
 #include <iostream>
+#include <functional>
+#include <map>
+#include <stdio.h>
+#include <tchar.h>
+
+void Intro();
+void PrintHelp();
+void DoCommand(int argc, char* argv[]);
 
 namespace
 {
 	const int ARGUMENTS_COUNT = 2;
-	const std::string GRAPH_TYPE = ".dot";
-	const std::string IMG_TYPE = ".png";
 	const std::string INSTANCE_FILE = "instance";
 	const std::string MINIMIZE_FILE = "minimize";
-	const std::string CONVERT_COMMAND = "dot -Tpng -o";
+	const char* HELP_PATTERN = "%-24s%s";
+	const std::string HELP_CMD = "-help";
+	const std::map <std::string, std::function<void()>> CMD = {
+		{ "-help", PrintHelp }
+	};
 }
-
-void ConvertToImage(const CMooreMachine &machine, const std::string &fileName);
 
 int main(int argc, char* argv[])
 {
 	try
 	{
-		if (argc < ARGUMENTS_COUNT)
+		setlocale(LC_ALL, "rus");
+
+		if (argc == 1)
 		{
-			throw std::invalid_argument(
-				"Invalid arguments count.\nUse: MooreMachine.exe <input>");
+			Intro();
 		}
-
-		std::ifstream input(argv[1]);
-		CMooreMachine instance(input);
-		CMooreMachine instanceCopy = instance;
-		instance.Minimize();
-
-		ConvertToImage(instanceCopy, INSTANCE_FILE);
-		ConvertToImage(instance, MINIMIZE_FILE);
-
-		CPrinter::Draw(INSTANCE_FILE + IMG_TYPE, MINIMIZE_FILE + IMG_TYPE);
+		else
+		{
+			PrintHelp();
+			//DoCommand(argc, argv);
+		}
 	}
 	catch (const std::exception &e)
 	{
@@ -48,14 +50,19 @@ int main(int argc, char* argv[])
 	return EXIT_SUCCESS;
 }
 
-void ConvertToImage(const CMooreMachine &machine, const std::string &fileName)
+void DoCommand(int argc, char* argv[])
 {
-	const std::string &dotName = fileName + GRAPH_TYPE;
-	const std::string &imageName = fileName + IMG_TYPE;
 
-	std::ofstream dotFile(dotName);
-	dotFile << machine.ToDotString();
-	dotFile.close();
+}
 
-	CUtils::RunProcess(CONVERT_COMMAND + imageName + " " + dotName);
+void Intro()
+{
+	std::cout << std::endl;
+}
+
+void PrintHelp()
+{
+	printf("%s\n", "MachineDraw.exe commands:");
+	printf(HELP_PATTERN, "-mmoore <machine>", "Минимизировать автомат мура");
+	printf(HELP_PATTERN, "-mmealy <machine>", "Минимизировать автомат милли");
 }

@@ -122,13 +122,14 @@
     <ClCompile Include="CDotWriter.cpp" />
     <ClCompile Include="CMooreMachine.cpp" />
     <ClCompile Include="CPrinter.cpp" />
-    <ClCompile Include="CUtils.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDotWriter.h" />
+    <ClInclude Include="IMachine.h" />
     <ClInclude Include="CPrinter.h" />
-    <ClInclude Include="CUtils.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="CMooreMachine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

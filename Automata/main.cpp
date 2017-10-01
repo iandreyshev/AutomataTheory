@@ -64,7 +64,7 @@ void MinimizeMoore(int argc, char* argv[])
 	minimizedMachine.Minimize();
 
 	auto normalImage = Utils::ToImage(machine, "normal_machine");
-	auto minimizedImage = Utils::ToImage(machine, "minimized_machine");
+	auto minimizedImage = Utils::ToImage(minimizedMachine, "minimized_machine");
 	CPrinter::Draw(normalImage, minimizedImage);
 }
 
