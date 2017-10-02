@@ -1,4 +1,4 @@
-#include "IMachine.h"
+#include "CMachine.h"
 #include "CDotWriter.h"
 
 #include <fstream>
@@ -11,7 +11,7 @@ namespace Utils
 {
 	using Matrix = std::vector<std::vector<size_t>>;
 	
-	std::string ToImage(const IMachine &machine, const std::string &fileName);
+	std::string ToImage(const CMachine &machine, const std::string &fileName);
 	bool RunProcess(const std::string &command);
 	std::string MatrixToStr(const Matrix &matrix);
 

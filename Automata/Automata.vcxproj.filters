@@ -30,6 +30,9 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CMachine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CDotWriter.h">
@@ -41,13 +44,13 @@
     <ClInclude Include="CPrinter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -87,7 +87,7 @@ namespace Utils
 
 		return result;
 	}
-	std::string ToImage(const IMachine &machine, const std::string &fileName)
+	std::string ToImage(const CMachine &machine, const std::string &fileName)
 	{
 		const std::string &dotName = fileName + GRAPH_TYPE;
 		const std::string &imageName = fileName + IMG_TYPE;

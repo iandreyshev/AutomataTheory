@@ -123,6 +123,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CDotWriter.cpp" />
+    <ClCompile Include="CMachine.cpp" />
     <ClCompile Include="CMooreMachine.cpp" />
     <ClCompile Include="CPrinter.cpp" />
     <ClCompile Include="main.cpp" />
@@ -132,7 +133,7 @@
     <ClInclude Include="CDotWriter.h" />
     <ClInclude Include="CMooreMachine.h" />
     <ClInclude Include="CPrinter.h" />
-    <ClInclude Include="IMachine.h" />
+    <ClInclude Include="CMachine.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
