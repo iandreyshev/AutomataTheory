@@ -55,7 +55,6 @@ void CMachine::NextMinimize(Table &table, Dictionary &states)
 
 void CMachine::Cleanup()
 {
-	m_transfersByState.clear();
-	m_classesByStates.clear();
+	OnCleanup();
 	m_table.clear();
 }

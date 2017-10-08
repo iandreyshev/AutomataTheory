@@ -75,7 +75,14 @@ void MinimizeMealy(int argc, char* argv[])
 		throw std::invalid_argument("Minimization: Invalid arguments count.\n");
 	}
 
-	(void)argv;
+	std::ifstream input(argv[2]);
+	CMealyMachine machine(input);
+	CMealyMachine minimizedMachine = machine;
+	minimizedMachine.Minimize();
+
+	auto normalImage = Utils::ToImage(machine, "normal_machine");
+	auto minimizedImage = Utils::ToImage(minimizedMachine, "minimized_machine");
+	CPrinter::Draw(normalImage, minimizedImage);
 }
 
 void PrintHelp(int argc, char* argv[])

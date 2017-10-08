@@ -72,21 +72,6 @@ namespace Utils
 		std::fputs(std::strerror(errno), stderr);
 		return false;
 	}
-	std::string MatrixToStr(const Matrix &matrix)
-	{
-		std::string result;
-
-		for (auto matrixRow : matrix)
-		{
-			for (auto matrixElement : matrixRow)
-			{
-				result += std::to_string(matrixElement) + " ";
-			}
-			result += '\n';
-		}
-
-		return result;
-	}
 	std::string ToImage(const CMachine &machine, const std::string &fileName)
 	{
 		const std::string &dotName = fileName + GRAPH_TYPE;
