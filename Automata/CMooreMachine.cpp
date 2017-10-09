@@ -91,7 +91,7 @@ void CMooreMachine::InitTransfersMap()
 
 bool CMooreMachine::Minimize()
 {
-	Table table = ZeroMinimize();
+	Table table = ZeroMinimize(m_classesByState);
 	Dictionary states = m_classesByState;
 	bool isMinimizeComplete = false;
 
@@ -116,36 +116,20 @@ bool CMooreMachine::Minimize()
 	return isMinimizeComplete;
 }
 
-Table CMooreMachine::ZeroMinimize()
+void CMooreMachine::CreateNewTable(const Table &table, const Dictionary &classesByState)
 {
-	Table result = m_table;
-
-	for (size_t i = 2; i < result.size(); ++i)
-	{
-		for (size_t j = 0; j < result[i].size(); ++j)
-		{
-			const auto instanceTransfer = m_table[i][j];
-			result[i][j] = m_classesByState.find(instanceTransfer)->second;
-		}
-	}
-
-	return result;
-}
-
-void CMooreMachine::CreateNewTable(Table &table, Dictionary &classByStates)
-{
-	std::map<size_t, size_t> stateByClasses;
+	std::map<size_t, size_t> statesByClass;
 
 	for (size_t i = 0; i < table[1].size(); ++i)
 	{
-		const auto &newClass = classByStates.find(table[1][i]);
-		stateByClasses.insert(std::make_pair(newClass->second, newClass->first));
+		const auto &newClass = classesByState.find(table[1][i]);
+		statesByClass.insert(std::make_pair(newClass->second, newClass->first));
 	}
 
-	Table newTable = Table(table.size(), IdList(stateByClasses.size()));
+	Table newTable = Table(table.size(), IdList(statesByClass.size()));
 	size_t tableColl = 0;
 
-	for (const auto &tableClass : stateByClasses)
+	for (const auto &tableClass : statesByClass)
 	{
 		newTable[0][tableColl] = m_classesByState.find(tableClass.second)->second;
 		newTable[1][tableColl] = tableClass.first;
@@ -154,17 +138,17 @@ void CMooreMachine::CreateNewTable(Table &table, Dictionary &classByStates)
 
 	for (size_t i = 0; i < newTable[1].size(); ++i)
 	{
-		const auto &state = stateByClasses.at(newTable[1][i]);
+		const auto &state = statesByClass.at(newTable[1][i]);
 
 		for (size_t j = 2; j < newTable.size(); ++j)
 		{
 			const auto &transferState = m_transfersByState.at(state)[j - 2];
-			newTable[j][i] = classByStates.at(transferState);
+			newTable[j][i] = classesByState.at(transferState);
 		}
 	}
 
 	m_table = newTable;
-	m_classesByState = classByStates;
+	m_classesByState = classesByState;
 	InitTransfersMap();
 }
 
@@ -190,7 +174,6 @@ std::string CMooreMachine::ToDotString() const
 	}
 
 	writer.~CDotWriter();
-
 	return stream.str();
 }
 

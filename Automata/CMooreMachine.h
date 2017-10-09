@@ -19,8 +19,7 @@ private:
 	void InitStates(const IdList &outs, const IdList &states);
 	void InitFullTable(const IdList &outs, const IdList &states, const Table &transfers);
 	void InitTransfersMap();
-	Table ZeroMinimize();
-	void CreateNewTable(Table &table, Dictionary &states);
+	void CreateNewTable(const Table &table, const Dictionary &classesByState);
 
 	Dictionary m_classesByState;
 	DictionaryList m_transfersByState;

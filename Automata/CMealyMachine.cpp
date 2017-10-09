@@ -2,6 +2,9 @@
 
 namespace
 {
+	const char HASH_SEPARATOR = '|';
+	const size_t MIN_EQU_CLASS = 1;
+
 	auto throw_invalid_arg_if = [](bool predicate, const auto &message) {
 		if (predicate) throw std::invalid_argument(message);
 	};
@@ -10,7 +13,6 @@ namespace
 CMealyMachine::CMealyMachine(std::ifstream &input)
 {
 	auto states = Machine::read_moore_line<size_t>(input);
-	InitStates(states);
 
 	Table transfers;
 	Table transfersOutputs;
@@ -23,9 +25,11 @@ CMealyMachine::CMealyMachine(std::ifstream &input)
 		transferRow = Machine::read_mealy_line<size_t>(input);
 	}
 
-	InitFullTable(transfers, states);
+	InitStates(states);
+	InitFullTable(transfers, states);	
 	InitOutputsMap(transfersOutputs, states);
 	InitTransfersMap();
+	InitEquClasses();
 }
 
 void CMealyMachine::InitStates(const IdList &states)
@@ -40,7 +44,6 @@ void CMealyMachine::InitStates(const IdList &states)
 			m_classesByState.find(states[i]) != m_classesByState.end(),
 			"Duplicate states in header not allowed.");
 		m_classesByState.insert(std::make_pair(states[i], 0));
-		m_outsByState.insert(std::make_pair(states[i], std::vector<size_t>()));
 	}
 }
 
@@ -88,6 +91,11 @@ void CMealyMachine::InitTransfersMap()
 
 void CMealyMachine::InitOutputsMap(const Table &transfersOutputs, const IdList &states)
 {
+	for (const auto &state : states)
+	{
+		m_outsByState.insert(std::make_pair(state, std::vector<size_t>()));
+	}
+
 	for (const auto &transfersRow : transfersOutputs)
 	{
 		throw_invalid_arg_if(
@@ -101,19 +109,128 @@ void CMealyMachine::InitOutputsMap(const Table &transfersOutputs, const IdList &
 	}
 }
 
-void CMealyMachine::CreateNewTable()
+void CMealyMachine::InitEquClasses()
 {
+	auto to_hash = [&](size_t state) {
+		std::string result;
+		for (const auto &out : m_outsByState.at(state))
+			result += HASH_SEPARATOR + std::to_string(out);
+		return result;
+	};
 
+	std::unordered_map<std::string, size_t> hashes;
+	size_t equClass = MIN_EQU_CLASS;
+
+	for (size_t i = 0; i < m_table[1].size(); ++i)
+	{
+		const auto &state = m_table[1][i];
+		const auto &hash = to_hash(state);
+
+		if (hashes.find(hash) != hashes.end())
+		{
+			m_classesByState.at(state) = hashes.at(hash);
+			m_table[0][i] = hashes.at(hash);
+			continue;
+		}
+
+		m_classesByState.at(state) = equClass;
+		m_table[0][i] = equClass;
+		hashes.insert(std::make_pair(hash, equClass));
+		++equClass;
+	}
+}
+
+void CMealyMachine::CreateNewTable(const Table &table, const Dictionary &classesByState)
+{
+	std::map<size_t, size_t> statesByClass;
+
+	for (size_t i = 0; i < table[1].size(); ++i)
+	{
+		const auto &newClass = classesByState.find(table[1][i]);
+		statesByClass.insert(std::make_pair(newClass->second, newClass->first));
+	}
+
+	Table newTable = Table(table.size(), IdList(statesByClass.size()));
+	DictionaryList newOutsByState;
+	size_t tableColl = 0;
+
+	for (const auto &tableClass : statesByClass)
+	{
+		newTable[0][tableColl] = m_classesByState.find(tableClass.second)->second;
+		newTable[1][tableColl] = tableClass.first;
+		++tableColl;
+	}
+
+	for (size_t i = 0; i < newTable[1].size(); ++i)
+	{
+		const auto &state = statesByClass.at(newTable[1][i]);
+		newOutsByState[state] = m_outsByState.at(state);
+
+		for (size_t j = 2; j < newTable.size(); ++j)
+		{
+			const auto &transferState = m_transfersByState.at(state)[j - 2];
+			newTable[j][i] = classesByState.at(transferState);
+		}
+	}
+
+	m_table = newTable;
+	m_classesByState = classesByState;
+	//m_outsByState = newOutsByState;
+	InitTransfersMap();
 }
 
 bool CMealyMachine::Minimize()
 {
-	return false;
+	Table table = ZeroMinimize(m_classesByState);
+	Dictionary states = m_classesByState;
+	bool isMinimizeComplete = false;
+
+	while (true)
+	{
+		Table tableCopy = table;
+		Dictionary statesCopy = states;
+		NextMinimize(table, states);
+
+		if (table == tableCopy && states == statesCopy)
+		{
+			break;
+		}
+		isMinimizeComplete = true;
+	}
+
+	if (isMinimizeComplete)
+	{
+		CreateNewTable(table, states);
+	}
+
+	return isMinimizeComplete;
 }
 
 std::string CMealyMachine::ToDotString() const
 {
-	return "";
+	std::stringstream stream;
+	CDotWriter writer(stream);
+
+	for (size_t i = 0; i < m_table.front().size(); ++i)
+	{
+		size_t inputIndex = 0;
+		const auto state = m_table[1][i];
+		const auto label = Machine::STATE_NAME + std::to_string(state);
+		writer.PrintVertex(state, label, StateType::Initial);
+
+		for (size_t j = 2; j < m_table.size(); ++j)
+		{
+			const auto &out = m_outsByState.at(state)[inputIndex];
+			const auto &edgeLabel =
+				Machine::INPUT_NAME + std::to_string(j - 1) + " / " +
+				Machine::OUT_NAME + std::to_string(out);
+			writer.PrintEdge(state, m_table[j][i], edgeLabel);
+			++inputIndex;
+		}
+	}
+
+	writer.~CDotWriter();
+	return stream.str();
 }
 
 void CMealyMachine::OnCleanup()

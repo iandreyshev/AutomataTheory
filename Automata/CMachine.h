@@ -70,9 +70,9 @@ public:
 	void Cleanup();
 
 protected:
-	Table m_table;
-
+	Table ZeroMinimize(const Dictionary &classesByState) const;
 	void NextMinimize(Table &table, Dictionary &states);
 	virtual void OnCleanup() = 0;
 
+	Table m_table;
 };

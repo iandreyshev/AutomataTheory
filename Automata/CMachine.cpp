@@ -53,6 +53,22 @@ void CMachine::NextMinimize(Table &table, Dictionary &states)
 	}
 }
 
+Table CMachine::ZeroMinimize(const Dictionary &classesByState) const
+{
+	Table result = m_table;
+
+	for (size_t i = 2; i < result.size(); ++i)
+	{
+		for (size_t j = 0; j < result[i].size(); ++j)
+		{
+			const auto instanceTransfer = m_table[i][j];
+			result[i][j] = classesByState.find(instanceTransfer)->second;
+		}
+	}
+
+	return result;
+}
+
 void CMachine::Cleanup()
 {
 	OnCleanup();
