@@ -89,41 +89,15 @@ void CMooreMachine::InitTransfersMap()
 	}
 }
 
-bool CMooreMachine::Minimize()
+void CMooreMachine::OnMinimizeEnd(const Table &table, const Dictionary &classesByState)
 {
-	Table table = ZeroMinimize(m_classesByState);
-	Dictionary states = m_classesByState;
-	bool isMinimizeComplete = false;
-
-	while (true)
-	{
-		Table tableCopy = table;
-		Dictionary statesCopy = states;
-		NextMinimize(table, states);
-
-		if (table == tableCopy && states == statesCopy)
-		{
-			break;
-		}
-		isMinimizeComplete = true;
-	}
-
-	if (isMinimizeComplete)
-	{
-		CreateNewTable(table, states);
-	}
-
-	return isMinimizeComplete;
-}
-
-void CMooreMachine::CreateNewTable(const Table &table, const Dictionary &classesByState)
-{
-	std::map<size_t, size_t> statesByClass;
+	std::map<size_t, IdList> statesByClass;
 
 	for (size_t i = 0; i < table[1].size(); ++i)
 	{
 		const auto &newClass = classesByState.find(table[1][i]);
-		statesByClass.insert(std::make_pair(newClass->second, newClass->first));
+		auto &classList = statesByClass[newClass->second];
+		classList.push_back(newClass->first);
 	}
 
 	Table newTable = Table(table.size(), IdList(statesByClass.size()));
@@ -131,14 +105,14 @@ void CMooreMachine::CreateNewTable(const Table &table, const Dictionary &classes
 
 	for (const auto &tableClass : statesByClass)
 	{
-		newTable[0][tableColl] = m_classesByState.find(tableClass.second)->second;
+		newTable[0][tableColl] = m_classesByState.find(tableClass.second.front())->second;
 		newTable[1][tableColl] = tableClass.first;
 		++tableColl;
 	}
 
 	for (size_t i = 0; i < newTable[1].size(); ++i)
 	{
-		const auto &state = statesByClass.at(newTable[1][i]);
+		const auto &state = statesByClass.at(newTable[1][i]).front();
 
 		for (size_t j = 2; j < newTable.size(); ++j)
 		{
@@ -175,10 +149,4 @@ std::string CMooreMachine::ToDotString() const
 
 	writer.~CDotWriter();
 	return stream.str();
-}
-
-void CMooreMachine::OnCleanup()
-{
-	m_transfersByState.clear();
-	m_classesByState.clear();
 }

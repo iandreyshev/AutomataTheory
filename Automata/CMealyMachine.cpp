@@ -140,31 +140,30 @@ void CMealyMachine::InitEquClasses()
 	}
 }
 
-void CMealyMachine::CreateNewTable(const Table &table, const Dictionary &classesByState)
+void CMealyMachine::OnMinimizeEnd(const Table &table, const Dictionary &classesByState)
 {
-	std::map<size_t, size_t> statesByClass;
+	std::map<size_t, IdList> statesByClass;
 
 	for (size_t i = 0; i < table[1].size(); ++i)
 	{
 		const auto &newClass = classesByState.find(table[1][i]);
-		statesByClass.insert(std::make_pair(newClass->second, newClass->first));
+		auto &classList = statesByClass[newClass->second];
+		classList.push_back(newClass->first);
 	}
 
 	Table newTable = Table(table.size(), IdList(statesByClass.size()));
-	DictionaryList newOutsByState;
 	size_t tableColl = 0;
 
 	for (const auto &tableClass : statesByClass)
 	{
-		newTable[0][tableColl] = m_classesByState.find(tableClass.second)->second;
+		newTable[0][tableColl] = m_classesByState.find(tableClass.second.front())->second;
 		newTable[1][tableColl] = tableClass.first;
 		++tableColl;
 	}
 
 	for (size_t i = 0; i < newTable[1].size(); ++i)
 	{
-		const auto &state = statesByClass.at(newTable[1][i]);
-		newOutsByState[state] = m_outsByState.at(state);
+		const auto &state = statesByClass.at(newTable[1][i]).front();
 
 		for (size_t j = 2; j < newTable.size(); ++j)
 		{
@@ -175,35 +174,7 @@ void CMealyMachine::CreateNewTable(const Table &table, const Dictionary &classes
 
 	m_table = newTable;
 	m_classesByState = classesByState;
-	//m_outsByState = newOutsByState;
 	InitTransfersMap();
-}
-
-bool CMealyMachine::Minimize()
-{
-	Table table = ZeroMinimize(m_classesByState);
-	Dictionary states = m_classesByState;
-	bool isMinimizeComplete = false;
-
-	while (true)
-	{
-		Table tableCopy = table;
-		Dictionary statesCopy = states;
-		NextMinimize(table, states);
-
-		if (table == tableCopy && states == statesCopy)
-		{
-			break;
-		}
-		isMinimizeComplete = true;
-	}
-
-	if (isMinimizeComplete)
-	{
-		CreateNewTable(table, states);
-	}
-
-	return isMinimizeComplete;
 }
 
 std::string CMealyMachine::ToDotString() const
@@ -231,11 +202,4 @@ std::string CMealyMachine::ToDotString() const
 
 	writer.~CDotWriter();
 	return stream.str();
-}
-
-void CMealyMachine::OnCleanup()
-{
-	m_classesByState.clear();
-	m_outsByState.clear();
-	m_transfersByState.clear();
 }

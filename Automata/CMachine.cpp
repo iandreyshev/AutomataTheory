@@ -53,6 +53,33 @@ void CMachine::NextMinimize(Table &table, Dictionary &states)
 	}
 }
 
+bool CMachine::Minimize()
+{
+	Table table = ZeroMinimize(m_classesByState);
+	Dictionary states = m_classesByState;
+	bool isMinimizeComplete = false;
+
+	while (true)
+	{
+		Table tableCopy = table;
+		Dictionary statesCopy = states;
+		NextMinimize(table, states);
+
+		if (table == tableCopy && states == statesCopy)
+		{
+			break;
+		}
+		isMinimizeComplete = true;
+	}
+
+	if (isMinimizeComplete)
+	{
+		OnMinimizeEnd(table, states);
+	}
+
+	return isMinimizeComplete;
+}
+
 Table CMachine::ZeroMinimize(const Dictionary &classesByState) const
 {
 	Table result = m_table;
@@ -67,10 +94,4 @@ Table CMachine::ZeroMinimize(const Dictionary &classesByState) const
 	}
 
 	return result;
-}
-
-void CMachine::Cleanup()
-{
-	OnCleanup();
-	m_table.clear();
 }

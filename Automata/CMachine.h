@@ -65,14 +65,14 @@ using DictionaryList = std::unordered_map<size_t, IdList>;
 class CMachine
 {
 public:
-	virtual bool Minimize() = 0;
+	bool Minimize();
 	virtual std::string ToDotString() const = 0;
-	void Cleanup();
 
 protected:
 	Table ZeroMinimize(const Dictionary &classesByState) const;
 	void NextMinimize(Table &table, Dictionary &states);
-	virtual void OnCleanup() = 0;
+	virtual void OnMinimizeEnd(const Table &table, const Dictionary &classesByState) = 0;
 
 	Table m_table;
+	Dictionary m_classesByState;
 };
