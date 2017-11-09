@@ -1,3 +1,0 @@
-S > aA | bB | cS
-A > cB | cA
-B > bB | #

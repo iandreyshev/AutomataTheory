@@ -1,16 +1,10 @@
 #pragma once
 
-namespace
-{
-	const char END_SYMBOL = '#';
-}
-
 class CRule
 {
 public:
 	static bool IsTerminal(char symbol);
 	static bool IsState(char symbol);
-	static bool IsEnd(char symbol);
 
 	CRule(char terminal);
 	CRule(char terminal, char state);

@@ -1,5 +1,8 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 #include "CGrammar.h"
+#include "Utils.h"
 
 namespace
 {
@@ -19,6 +22,7 @@ int main(int argc, char* argv[])
 
 		std::ifstream input(argv[1]);
 		CGrammar grammar(input);
+		Utils::ToImage(grammar.ToGraph(), "result");
 	}
 	catch (const std::exception ex)
 	{

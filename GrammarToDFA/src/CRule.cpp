@@ -9,7 +9,6 @@ namespace
 	
 	const std::string INVALID_FOR_STATE =
 		"Character '%1%' is not valid for states. Use Uppercase characters for this.";
-
 }
 
 CRule::CRule(char terminal)
@@ -60,25 +59,10 @@ char CRule::GetState() const
 
 bool CRule::IsTerminal(char symbol)
 {
-	return
-	{
-		IsEnd(symbol) ||
-		symbol >= 'a' &&
-		symbol <= 'z'
-	};
+	return symbol >= 'a' && symbol <= 'z';
 }
 
 bool CRule::IsState(char symbol)
 {
-	return
-	(
-		!IsTerminal(symbol) &&
-		symbol >= 'A' &&
-		symbol <= 'Z'
-	);
-}
-
-bool CRule::IsEnd(char symbol)
-{
-	return symbol == END_SYMBOL;
+	return symbol >= 'A' && symbol <= 'Z';
 }

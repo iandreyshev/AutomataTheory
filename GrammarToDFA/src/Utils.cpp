@@ -72,13 +72,13 @@ namespace Utils
 		std::fputs(std::strerror(errno), stderr);
 		return false;
 	}
-	std::string ToImage(const CDotWriter &dotWriter, const std::string &fileName)
+	std::string ToImage(const std::string &dotStr, const std::string &fileName)
 	{
 		const std::string &dotName = fileName + GRAPH_TYPE;
 		const std::string &imageName = fileName + IMG_TYPE;
 
 		std::ofstream dotFile(dotName);
-		dotFile << dotWriter.Get();
+		dotFile << dotStr;
 		dotFile.close();
 
 		RunProcess(CONVERT_COMMAND + imageName + " " + dotName);
