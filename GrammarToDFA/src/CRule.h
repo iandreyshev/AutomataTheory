@@ -7,7 +7,7 @@ public:
 	static bool IsState(char symbol);
 
 	CRule(char terminal);
-	CRule(char terminal, char state);
+	CRule(char first, char second);
 
 	bool IsTerminal() const;
 	char GetTerminal() const;

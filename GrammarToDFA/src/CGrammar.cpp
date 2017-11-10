@@ -31,10 +31,16 @@ namespace
 	auto to_rule_str = [](char state, const std::string &chain) {
 		return "'" + std::string(1, state) + " > " + chain + "'";
 	};
+	auto to_state = [](const std::set<char> &state) {
+		std::string result = "";
+		for (const auto &ch : state) result += { ch };
+		return result;
+	};
 }
 
-CGrammar::CGrammar(std::ifstream &input)
+CGrammar::CGrammar(std::ifstream &input, GrammarType type)
 {
+	m_type = type;
 	std::string line;
 
 	while (getline(input, line))
@@ -63,21 +69,29 @@ void CGrammar::InitRules(char state, std::string &rule)
 	for (auto &chain : rules)
 	{
 		chain.erase(boost::remove_if(chain, ::isspace), chain.end());
+		const size_t &chainSize = chain.size();
 
-		switch (chain.size())
+		auto terminalCh = [&]() -> char {
+			return chain[m_type == Left ? 0 : (chainSize == 1) ? 0 : 1];
+		};
+		auto stateCh = [&]()  {
+			return chain[m_type == Left ? 1 : 0];
+		};
+
+		switch (chainSize)
 		{
 		case 1:
 			invalid_arg_if(
-				!CRule::IsTerminal(chain[0]),
+				!CRule::IsTerminal(terminalCh()),
 				"Invalid rule: " + to_rule_str(state, chain) + "\n");
-			AddRule(state, CRule(chain[0]));
+			AddRule(state, CRule(terminalCh()));
 			break;
 
 		case 2:
 			invalid_arg_if(
-				!CRule::IsTerminal(chain[0]) || !CRule::IsState(chain[1]),
+				!CRule::IsTerminal(terminalCh()) || !CRule::IsState(stateCh()),
 				"Invalid rule: " + to_rule_str(state, chain) + "\n");
-			AddRule(state, CRule(chain[0], chain[1]));
+			AddRule(state, CRule(stateCh(), terminalCh()));
 			break;
 
 		default:
@@ -124,18 +138,15 @@ void CGrammar::CreateRulesMap()
 		{
 			for (auto &rule : m_rules.at(atomState))
 			{
-				auto destination = rule.IsTerminal() ? END_STATE : rule.GetState();
+				const auto &destination = rule.IsTerminal() ? END_STATE : rule.GetState();
 				auto &newState = m_table[state][rule.GetTerminal()];
-				size_t index = 0;
-
-				while (index < newState.size() && newState[index] < destination) ++index;
-				newState.insert(index, { destination });
+				newState.insert(destination);
 			}
 		}
 
 		for (auto newRow : m_table.at(state))
 		{
-			const auto &newState = newRow.second;
+			const auto &newState = to_state(newRow.second);
 
 			if (m_table.find(newState) == m_table.end() && newState[0] != END_STATE)
 			{
@@ -171,13 +182,13 @@ std::string CGrammar::ToGraph() const
 		for (const auto &cell : row.second)
 		{
 			const auto &from = m_stateIndex.at(state);
-			const auto &to = m_stateIndex.at(cell.second);
+			const auto &to = m_stateIndex.at(to_state(cell.second));
 			writer.PrintEdge(from, to, { cell.first });
 		}
 	}
 
 	const auto &endState = { END_STATE };
-	writer.PrintVertex(m_stateIndex.at(endState), endState, StateType::Terminal);
+	writer.PrintVertex(m_stateIndex.at(endState), endState, Terminal);
 
 	return writer.Get();
 }

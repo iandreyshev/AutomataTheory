@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 		}
 
 		std::ifstream input(argv[1]);
-		CGrammar grammar(input);
+		CGrammar grammar(input, Left);
 		Utils::ToImage(grammar.ToGraph(), "result");
 	}
 	catch (const std::exception ex)

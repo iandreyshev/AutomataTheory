@@ -22,7 +22,7 @@ CRule::CRule(char terminal)
 	m_terminal = terminal;
 }
 
-CRule::CRule(char terminal, char state)
+CRule::CRule(char state, char terminal)
 {
 	if (!IsTerminal(terminal))
 	{
