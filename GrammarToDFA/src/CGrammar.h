@@ -6,28 +6,21 @@
 using TableRow = std::unordered_map<char, std::set<char>>;
 using Table = std::unordered_map<std::string, TableRow>;
 
-enum GrammarType
-{
-	Left,
-	Right,
-};
-
 class CGrammar
 {
 public:
-	CGrammar(std::ifstream &input, GrammarType type);
+	void Read(std::ifstream &input, bool isRight);
+
 	std::string ToGraph() const;
 
 private:
-	void InitRules(char state, std::string &rule);
-	void AddRule(char state, const CRule &rule);
-	void ValidateRules() const;
+	bool ReadFromInput(std::ifstream &input, std::string &state, std::string &rules);
+	void InitRule(char state, std::string &rule);
 	void CreateRulesMap();
 	void CreateStateIndexes();
 
-	GrammarType m_type;
 	std::unordered_map<char, std::vector<CRule>> m_rules;
 	std::unordered_map<std::string, size_t> m_stateIndex;
 	Table m_table;
-
+	bool m_isRight;
 };

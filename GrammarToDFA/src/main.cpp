@@ -6,7 +6,7 @@
 
 namespace
 {
-	const int ARGUMENTS_COUNT = 2;
+	const int ARGUMENTS_COUNT = 3;
 }
 
 int main(int argc, char* argv[])
@@ -20,11 +20,15 @@ int main(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-		std::ifstream input(argv[1]);
-		CGrammar grammar(input, Left);
-		Utils::ToImage(grammar.ToGraph(), "result");
+		const std::string type = argv[1];
+		const auto &file = argv[2];
+
+		CGrammar grammar;
+		std::ifstream input(file);
+		grammar.Read(input, type == "right");
+		Utils::ToImage(grammar.ToGraph(), argv[1]);
 	}
-	catch (const std::exception ex)
+	catch (const std::exception &ex)
 	{
 		std::cout << ex.what() << std::endl;
 		return EXIT_FAILURE;

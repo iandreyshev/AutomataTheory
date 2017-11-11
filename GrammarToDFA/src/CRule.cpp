@@ -59,7 +59,7 @@ char CRule::GetState() const
 
 bool CRule::IsTerminal(char symbol)
 {
-	return symbol >= 'a' && symbol <= 'z';
+	return (symbol >= 'a' && symbol <= 'z') || (symbol >= '0' && symbol <= '9');
 }
 
 bool CRule::IsState(char symbol)
