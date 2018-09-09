@@ -1,15 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Lexer
 {
 	class Program
 	{
-		static void Main(string[] args)
+		static int Main(string[] args)
 		{
+			if (args.Length < 1)
+			{
+				return -1;
+			}
+
+			Lexer lexer = new Lexer(new StreamReader(args[0]));
+			Token token = new Token();
+
+			while(lexer.GetToken(token))
+			{
+				Console.WriteLine(token.ToString());
+			}
+
+			return 0;
 		}
 	}
 }
