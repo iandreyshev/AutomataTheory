@@ -1,5 +1,5 @@
 package grammar
 
-class Determ(
+class NonTerminal(
         val symbol: String
 )

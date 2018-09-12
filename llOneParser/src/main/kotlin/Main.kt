@@ -1,6 +1,6 @@
 import grammar.Grammar
-import parser.LLOneParser
-import parser.PredictParseTable
+import parser.LL1Parser
+import parser.PredictParsingTable
 import java.io.File
 
 private const val GRAMMAR_FILE_PATH = "grammar.txt"
@@ -8,8 +8,8 @@ private const val GRAMMAR_FILE_PATH = "grammar.txt"
 fun main(args: Array<String>) {
     val grammarStr = File(GRAMMAR_FILE_PATH).readText()
     val grammar = Grammar(grammarStr)
-    val parseTable = PredictParseTable(grammar)
-    val parser = LLOneParser(parseTable)
+    val parseTable = PredictParsingTable(grammar)
+    val parser = LL1Parser(parseTable)
     var input: String? = readLine()
 
     while (input != null && input != "exit") {

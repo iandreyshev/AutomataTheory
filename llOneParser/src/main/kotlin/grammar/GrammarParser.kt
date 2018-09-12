@@ -1,62 +1,76 @@
 package grammar
 
+import grammar.Grammar.Companion.DOLLAR_SYMBOL
+import grammar.Grammar.Companion.EPSILON_SYMBOL
+import grammar.Grammar.Companion.NODE_DELIMITER
+import grammar.Grammar.Companion.NODE_PARTS_DELIMITER
+import grammar.Grammar.Companion.PRODUCTION_DELIMITER
+import grammar.Grammar.Companion.SYMBOLS_DELIMITER
+
 internal class GrammarParser(
         private val grammarStr: String
 ) {
 
-    fun parse(): List<Rule> = grammarStr
-            .split(NODE_DELIMITER)
-            .map { nodeStr ->
-                val nodeParts = nodeStr.split(NODE_PARTS_DELIMITER)
-                return@map RuleNode(
-                        nodeParts[0].trim(),
-                        nodeParts[1].trim(),
-                        nodeParts[2].trim(),
-                        nodeParts[3].trim()
-                )
-            }
-            .let { parseRules(it) }
-
-    private fun parseRules(nodes: List<RuleNode>): List<Rule> = nodes.map { node ->
-        val determ = GrammarSymbol.determ(Determ(node.determ))
-        val productions = node.production
-                .split(PRODUCTION_DELIMITER)
-                .map { altProduction ->
-                    altProduction.splitSymbols()
-                            .map { GrammarSymbol.term(it) }
-                            .let { Production(it) }
+    private lateinit var mNonTerminal: Set<String>
+    private val mRules: List<Rule> by lazy {
+        grammarStr.split(NODE_DELIMITER)
+                .map { nodeStr ->
+                    val nodeParts = nodeStr.split(NODE_PARTS_DELIMITER)
+                    return@map RuleNode(
+                            nodeParts[0].trim(),
+                            nodeParts[1].trim(),
+                            nodeParts[2].trim(),
+                            nodeParts[3].trim()
+                    )
                 }
-        val firstSet = node.firstSet.splitSymbols()
-                .toHashSet()
-        val followSet = node.followSet.splitSymbols()
-                .toHashSet()
-
-        Rule(determ, productions, firstSet, followSet)
+                .let { parseRules(it) }
     }
 
-    private fun String.splitSymbols(): List<Term> = split(SYMBOLS_DELIMITER)
-            .map { it.trim().toTerm() }
+    fun parse(): List<Rule> = mRules
 
-    private fun String.toTerm(): Term = when (this) {
+    private fun parseRules(nodes: List<RuleNode>): List<Rule> {
+        mNonTerminal = nodes.map { it.nonTerminal }
+                .toHashSet()
+
+        return nodes.map { node ->
+            val nonTerminal = GrammarSymbol.nonTerminal(NonTerminal(node.nonTerminal))
+            val productions = node.production
+                    .split(PRODUCTION_DELIMITER)
+                    .map { altProduction ->
+                        altProduction.trim()
+                                .splitSymbols()
+                                .let { Production(it) }
+                    }
+            val firstSet = node.firstSet.splitSymbols()
+                    .mapNotNull { it.terminal }
+                    .toHashSet()
+            val followSet = node.followSet.splitSymbols()
+                    .mapNotNull { it.terminal }
+                    .toHashSet()
+
+            Rule(nonTerminal, productions, firstSet, followSet)
+        }
+    }
+
+    private fun String.splitSymbols(): List<GrammarSymbol> = split(SYMBOLS_DELIMITER)
+            .map {
+                when {
+                    mNonTerminal.contains(it) -> GrammarSymbol.nonTerminal(NonTerminal(it))
+                    else -> GrammarSymbol.terminal(it.trim().toTerminal())
+                }
+            }
+
+    private fun String.toTerminal(): Term = when (this) {
         EPSILON_SYMBOL -> Term.createEpsilon()
         DOLLAR_SYMBOL -> Term.createDollar()
         else -> Term.createTerm(this)
     }
 
     private data class RuleNode(
-            val determ: String,
+            val nonTerminal: String,
             val production: String,
             val firstSet: String,
             val followSet: String
     )
-
-    companion object {
-        private const val NODE_DELIMITER = "\n"
-        private const val NODE_PARTS_DELIMITER = "->"
-        private const val PRODUCTION_DELIMITER = "|"
-        private const val SYMBOLS_DELIMITER = " "
-        private const val EPSILON_SYMBOL = "#epsilon"
-        private const val DOLLAR_SYMBOL = "#dollar"
-    }
 
 }

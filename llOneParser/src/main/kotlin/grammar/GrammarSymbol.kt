@@ -1,15 +1,15 @@
 package grammar
 
 class GrammarSymbol private constructor(
-        val term: Term?,
-        val determ: Determ?
+        val terminal: Term?,
+        val nonTerminal: NonTerminal?
 ) {
 
     companion object {
-        fun term(value: Term) =
+        fun terminal(value: Term) =
                 GrammarSymbol(value, null)
 
-        fun determ(value: Determ) =
+        fun nonTerminal(value: NonTerminal) =
                 GrammarSymbol(null, value)
     }
 
