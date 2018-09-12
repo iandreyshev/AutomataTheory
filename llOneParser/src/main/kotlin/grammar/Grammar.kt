@@ -1,6 +1,6 @@
 package grammar
 
-typealias TermSet = Set<Term>
+typealias TermSet = Set<Terminal>
 
 class Grammar internal constructor(
         grammarStr: String

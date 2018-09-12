@@ -60,10 +60,10 @@ internal class GrammarParser(
                 }
             }
 
-    private fun String.toTerminal(): Term = when (this) {
-        EPSILON_SYMBOL -> Term.createEpsilon()
-        DOLLAR_SYMBOL -> Term.createDollar()
-        else -> Term.createTerm(this)
+    private fun String.toTerminal(): Terminal = when (this) {
+        EPSILON_SYMBOL -> Terminal.createEpsilon()
+        DOLLAR_SYMBOL -> Terminal.createDollar()
+        else -> Terminal.createTerm(this)
     }
 
     private data class RuleNode(
