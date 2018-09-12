@@ -1,15 +1,15 @@
 package parser
 
 import grammar.Grammar
-import grammar.NonTerm
+import grammar.Determ
 import grammar.Production
 import grammar.Term
 
-internal class PredictParseTable(
+class PredictParseTable(
         private val grammar: Grammar
 ) {
 
-    operator fun get(nonTerm: NonTerm, term: Term): Production {
+    operator fun get(nonTerm: Determ, term: Term): Production {
         TODO()
     }
 

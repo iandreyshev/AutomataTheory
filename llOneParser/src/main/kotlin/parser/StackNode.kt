@@ -1,14 +1,14 @@
 package parser
 
-import grammar.NonTerm
+import grammar.Determ
 import grammar.Term
 
 internal class StackNode private constructor(
         val term: Term?,
-        val nonTerm: NonTerm?
+        val nonTerm: Determ?
 ) {
 
     constructor(term: Term) : this(term, null)
-    constructor(nonTerm: NonTerm) : this(null, nonTerm)
+    constructor(nonTerm: Determ) : this(null, nonTerm)
 
 }

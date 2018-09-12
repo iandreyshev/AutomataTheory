@@ -1,3 +1,5 @@
 package grammar
 
-class Production
+class Production(
+        val symbols: List<GrammarSymbol>
+)

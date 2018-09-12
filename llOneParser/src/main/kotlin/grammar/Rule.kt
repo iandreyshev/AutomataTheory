@@ -1,6 +1,8 @@
 package grammar
 
 class Rule(
-        val nonTerm: NonTerm,
-        val production: Production
+        val determ: GrammarSymbol,
+        val productions: List<Production>,
+        val firstSet: Set<Term>,
+        val followSet: Set<Term>
 )

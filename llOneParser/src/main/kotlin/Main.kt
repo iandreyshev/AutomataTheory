@@ -1,27 +1,26 @@
-@file:JvmName("Main")
-
 import grammar.Grammar
 import parser.LLOneParser
+import parser.PredictParseTable
+import java.io.File
 
-private const val GRAMMAR_FILE_PATH = ""
-private const val INPUT_FILE_PATH = ""
+private const val GRAMMAR_FILE_PATH = "grammar.txt"
 
 fun main(args: Array<String>) {
+    val grammarStr = File(GRAMMAR_FILE_PATH).readText()
+    val grammar = Grammar(grammarStr)
+    val parseTable = PredictParseTable(grammar)
+    val parser = LLOneParser(parseTable)
+    var input: String? = readLine()
 
-    args.forEach {
-        print(it)
-    }
+    while (input != null && input != "exit") {
+        val isParsingSuccess = parser.execute(input)
 
-    GRAMMAR_FILE_PATH.byteInputStream().use { grammarStream ->
-        val grammarStr = grammarStream.readBytes().contentToString()
-        val grammar = Grammar.Parser().parse(grammarStr)
-
-        INPUT_FILE_PATH.byteInputStream().use { inputStream ->
-            val input = inputStream.readBytes().contentToString()
-            val isSuccess = LLOneParser.parse(grammar, input)
-
-            if (isSuccess) print("Success!")
-            else print("Error!")
+        if (isParsingSuccess) {
+            print("Input string is correct")
+        } else {
+            print("Input string is not LL(1)")
         }
+
+        input = readLine()
     }
 }
