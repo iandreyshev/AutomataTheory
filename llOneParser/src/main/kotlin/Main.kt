@@ -1,5 +1,5 @@
 import grammar.Grammar
-import lexer.Lexer
+import lexer.HandmadeLexer
 import parser.LL1Parser
 import parser.PredictParsingTable
 import java.io.File
@@ -13,7 +13,7 @@ fun main(args: Array<String>) {
     val parser = LL1Parser()
 
     try {
-        parser.execute(grammar.root, parseTable, Lexer())
+        parser.execute(grammar.root, parseTable, HandmadeLexer)
         println()
         println("Grammar is OK")
     } catch (ex: Exception) {
