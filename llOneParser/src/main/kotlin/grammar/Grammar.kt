@@ -6,6 +6,8 @@ class Grammar internal constructor(
         grammarStr: String
 ) {
 
+    val root: GrammarSymbol
+
     val nonTerminals: Set<NonTerminal>
         get() = mNonTerminals
 
@@ -35,6 +37,10 @@ class Grammar internal constructor(
         mappedNonTerminal to (mRules.firstOrNull { it.nonTerminal.symbol == mappedNonTerminal.symbol }
                 ?.followSet
                 ?: setOf())
+    }
+
+    init {
+        root = GrammarSymbol.newNonTerminal(mRules.first().nonTerminal)
     }
 
     fun firstSetFor(nonTerminal: NonTerminal) =
