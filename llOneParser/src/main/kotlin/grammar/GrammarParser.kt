@@ -33,7 +33,7 @@ internal class GrammarParser(
                 .toHashSet()
 
         return nodes.map { node ->
-            val nonTerminal = GrammarSymbol.nonTerminal(NonTerminal(node.nonTerminal))
+            val nonTerminal = NonTerminal(node.nonTerminal)
             val productions = node.production
                     .split(PRODUCTION_DELIMITER)
                     .map { altProduction ->
@@ -55,15 +55,15 @@ internal class GrammarParser(
     private fun String.splitSymbols(): List<GrammarSymbol> = split(SYMBOLS_DELIMITER)
             .map {
                 when {
-                    mNonTerminal.contains(it) -> GrammarSymbol.nonTerminal(NonTerminal(it))
-                    else -> GrammarSymbol.terminal(it.trim().toTerminal())
+                    mNonTerminal.contains(it) -> GrammarSymbol.newNonTerminal(NonTerminal(it))
+                    else -> GrammarSymbol.newTerminal(it.trim().toTerminal())
                 }
             }
 
     private fun String.toTerminal(): Terminal = when (this) {
-        EPSILON_SYMBOL -> Terminal.createEpsilon()
-        DOLLAR_SYMBOL -> Terminal.createDollar()
-        else -> Terminal.createTerm(this)
+        EPSILON_SYMBOL -> Terminal.newEpsilon()
+        DOLLAR_SYMBOL -> Terminal.newDollar()
+        else -> Terminal.newTerminal(this)
     }
 
     private data class RuleNode(

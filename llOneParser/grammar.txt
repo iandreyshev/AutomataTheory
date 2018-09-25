@@ -1,5 +1,5 @@
-E    ->   T E`                ->   ( id         ->   ) #dollar
-E`   ->   + T E` | #epsilon   ->   + #epsilon   ->   ) #dollar
-T    ->   F T`                ->   ( id         ->   + ) #dollar
-T`   ->   * F T` | #epsilon   ->   * #epsilon   ->   + ) #dollar
+E    ->   T E#                ->   ( id         ->   ) #dollar
+E#   ->   + T E# | #epsilon   ->   + #epsilon   ->   ) #dollar
+T    ->   F T#                ->   ( id         ->   + ) #dollar
+T#   ->   * F T# | #epsilon   ->   * #epsilon   ->   + ) #dollar
 F    ->   ( E ) | id          ->   ( id         ->   + * ) #dollar

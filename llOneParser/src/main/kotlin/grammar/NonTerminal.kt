@@ -1,5 +1,9 @@
 package grammar
 
-class NonTerminal(
+data class NonTerminal(
         val symbol: String
-)
+) {
+
+    override fun toString() = symbol
+
+}

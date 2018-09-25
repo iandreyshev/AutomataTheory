@@ -1,15 +1,18 @@
 package grammar
 
-class GrammarSymbol private constructor(
+data class GrammarSymbol private constructor(
         val terminal: Terminal?,
         val nonTerminal: NonTerminal?
 ) {
 
+    override fun toString() = terminal?.symbol
+            ?: (nonTerminal?.symbol ?: "")
+
     companion object {
-        fun terminal(value: Terminal) =
+        fun newTerminal(value: Terminal) =
                 GrammarSymbol(value, null)
 
-        fun nonTerminal(value: NonTerminal) =
+        fun newNonTerminal(value: NonTerminal) =
                 GrammarSymbol(null, value)
     }
 

@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
     val grammarStr = File(GRAMMAR_FILE_PATH).readText()
     val grammar = Grammar(grammarStr)
     val parseTable = PredictParsingTable(grammar)
-    val parser = LL1Parser(parseTable)
+    val parser = LL1Parser(parseTable) { "" }
     var input: String? = readLine()
 
     while (input != null && input != "exit") {

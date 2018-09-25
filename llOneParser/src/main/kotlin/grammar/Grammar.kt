@@ -9,39 +9,43 @@ class Grammar internal constructor(
     val nonTerminals: Set<NonTerminal>
         get() = mNonTerminals
 
-    val terms: TermSet
-        get() = mTerms
+    val terminals: TermSet
+        get() = mTerminals
 
-    private val mRules: List<Rule> = GrammarParser(grammarStr).parse()
+    private val mRules = GrammarParser(grammarStr).parse()
 
-    private val mNonTerminals: Set<NonTerminal> = mRules.mapNotNull { it.nonTerminal.nonTerminal }
+    private val mNonTerminals = mRules
+            .map { it.nonTerminal }
             .toHashSet()
 
-    private val mTerms: TermSet = mRules.flatMap { it.productions }
+    private val mTerminals = mRules
+            .flatMap { it.productions }
             .flatMap { it.symbols }
             .mapNotNull { it.terminal }
             .filter { !it.isEpsilon }
             .toHashSet()
 
-    private val mFirstSetMap: Map<NonTerminal, TermSet> = mNonTerminals.associate { mappedNonTerminal ->
-        mappedNonTerminal to (mRules.firstOrNull { it.nonTerminal.nonTerminal?.symbol == mappedNonTerminal.symbol }
+    private val mFirstSetMap = mNonTerminals.associate { mappedNonTerminal ->
+        mappedNonTerminal to (mRules.firstOrNull { it.nonTerminal.symbol == mappedNonTerminal.symbol }
                 ?.firstSet
                 ?: setOf())
     }
 
-    private val mFollowSetMap: Map<NonTerminal, TermSet> = mNonTerminals.associate { mappedNonTerminal ->
-        mappedNonTerminal to (mRules.firstOrNull { it.nonTerminal.nonTerminal?.symbol == mappedNonTerminal.symbol }
+    private val mFollowSetMap = mNonTerminals.associate { mappedNonTerminal ->
+        mappedNonTerminal to (mRules.firstOrNull { it.nonTerminal.symbol == mappedNonTerminal.symbol }
                 ?.followSet
                 ?: setOf())
     }
 
-    fun firstSetFor(nonTerminal: NonTerminal): TermSet =
+    fun firstSetFor(nonTerminal: NonTerminal) =
             mFirstSetMap.getOrDefault(nonTerminal, setOf())
 
-    fun followSetFor(nonTerminal: NonTerminal): TermSet =
+    fun followSetFor(nonTerminal: NonTerminal) =
             mFollowSetMap.getOrDefault(nonTerminal, setOf())
 
-    fun productionsFor(nonTerminal: NonTerminal): List<Production> = TODO()
+    fun productionsFor(nonTerminal: NonTerminal) =
+            mRules.associate { it.nonTerminal.symbol to it.productions }
+                    .getOrDefault(nonTerminal.symbol, listOf())
 
     companion object {
         internal const val NODE_DELIMITER = "\n"

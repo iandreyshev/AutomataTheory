@@ -1,20 +1,25 @@
 package grammar
 
-class Terminal private constructor(
+data class Terminal private constructor(
         val symbol: String,
         val isDollar: Boolean,
         val isEpsilon: Boolean
 ) {
 
+    override fun toString() = symbol
+
     companion object {
-        fun createTerm(symbol: String): Terminal =
-                Terminal(symbol, false, false)
+        fun newTerminal(symbol: String): Terminal = when (symbol) {
+            Grammar.EPSILON_SYMBOL -> Terminal.newEpsilon()
+            Grammar.DOLLAR_SYMBOL -> Terminal.newDollar()
+            else -> Terminal(symbol, false, false)
+        }
 
-        fun createDollar(): Terminal =
-                Terminal("", true, false)
+        fun newDollar(): Terminal =
+                Terminal(Grammar.DOLLAR_SYMBOL, true, false)
 
-        fun createEpsilon(): Terminal =
-                Terminal("", false, true)
+        fun newEpsilon(): Terminal =
+                Terminal(Grammar.EPSILON_SYMBOL, false, true)
     }
 
 }
