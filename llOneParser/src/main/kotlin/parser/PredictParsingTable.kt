@@ -37,12 +37,6 @@ class PredictParsingTable(
             val followSet = grammar.followSetFor(nonTerminal)
             val productions = grammar.productionsFor(nonTerminal)
 
-            println()
-            println("newNonTerminal: $nonTerminal")
-            println("firstSet: $firstSet")
-            println("followSet: $followSet")
-            println("productions: $productions")
-
             firstSet.forEach { terminalFromFirstSet ->
                 table.fillFromFirstSet(productions, nonTerminal, terminalFromFirstSet)
 
@@ -58,17 +52,27 @@ class PredictParsingTable(
     }
 
     private fun TableMap.fillFromFirstSet(productions: List<Production>, nonTerminal: NonTerminal, terminal: Terminal) {
-        println("Fill from first. Productions count: ${productions.count()}")
         when (productions.count()) {
             0 -> throw IllegalArgumentException("Can not find productions for newNonTerminal ($nonTerminal)")
             1 -> put(nonTerminal, terminal, productions.first())
             else -> {
-                val production = productions.firstOrNull {
-                    it.symbols.firstOrNull()?.terminal?.symbol == terminal.symbol
+                val withoutEpsilon = productions.filter { !it.isEpsilon }
+                if (withoutEpsilon.count() == 1) {
+                    put(nonTerminal, terminal, withoutEpsilon.first())
+                    return
                 }
 
-                if (production != null) {
-                    put(nonTerminal, terminal, production)
+                val startFromTerminal = productions
+                        .firstOrNull { it.firstOrNull?.terminal?.symbol == terminal.symbol }
+                if (startFromTerminal != null) {
+                    put(nonTerminal, terminal, startFromTerminal)
+                    return
+                }
+
+                val startFromNonTerminal = productions
+                        .filter { it.symbols.firstOrNull()?.nonTerminal != null }
+                if (startFromNonTerminal.firstOrNull() != null) {
+                    put(nonTerminal, terminal, startFromNonTerminal.first())
                     return
                 }
 
@@ -78,13 +82,12 @@ class PredictParsingTable(
     }
 
     private fun TableMap.fillTableFromFollowSet(productions: List<Production>, nonTerminal: NonTerminal, terminal: Terminal) {
-        println("Fill from follow. Productions count: ${productions.count()}")
         when (productions.count()) {
             0 -> throw IllegalArgumentException("Can not find productions for newNonTerminal ($nonTerminal)")
             1 -> put(nonTerminal, terminal, productions.first())
             else -> {
-                val production = productions.firstOrNull {
-                    it.symbols.firstOrNull { it.terminal?.isEpsilon == true } != null
+                val production = productions.firstOrNull { production ->
+                    production.symbols.firstOrNull { it.terminal?.isEpsilon == true } != null
                 }
 
                 if (production != null) {
@@ -106,7 +109,6 @@ class PredictParsingTable(
         } else {
             terminal
         }
-        println("PUT [$production] at [${nonTerminal.symbol}, ${terminalIndex.symbol}]")
         get(nonTerminal.symbol)?.put(terminalIndex.symbol, production)
     }
 

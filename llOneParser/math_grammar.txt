@@ -1,0 +1,9 @@
+Syntax   ->   Expr                                               ->   ( 1 2 3 4 5 6 7 8 9 0          ->   ) #dollar
+Expr     ->   Term Expr_                                         ->   ( 1 2 3 4 5 6 7 8 9 0          ->   ) #dollar
+Expr_    ->   + Term Expr_ | - Term Expr_ | #epsilon             ->   + - #epsilon                   ->   ) #dollar
+Term     ->   Factor Term_                                       ->   ( 1 2 3 4 5 6 7 8 9 0          ->   ) + - #dollar
+Term_    ->   * Factor Term_ | / Factor Term_ | #epsilon         ->   * / #epsilon                   ->   ) + - #dollar
+Factor   ->   ( Expr ) | Number                                  ->   ( 1 2 3 4 5 6 7 8 9 0          ->   ) + - * / #dollar
+Number   ->   Digit Digit_                                       ->   1 2 3 4 5 6 7 8 9 0            ->   ) + - * / #dollar
+Digit    ->   1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0              ->   1 2 3 4 5 6 7 8 9 0            ->   1 2 3 4 5 6 7 8 9 0 ) + - * / #dollar
+Digit_   ->   Digit Digit_ | #epsilon                            ->   1 2 3 4 5 6 7 8 9 0 #epsilon   ->   ) + - * / #dollar

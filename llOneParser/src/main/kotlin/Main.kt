@@ -1,22 +1,30 @@
 import grammar.Grammar
-import lexer.HandmadeLexer
+import lexer.TestLexer
 import parser.LL1Parser
 import parser.PredictParsingTable
 import java.io.File
 
-private const val GRAMMAR_FILE_PATH = "grammar.txt"
-
 fun main(args: Array<String>) {
-    val grammarStr = File(GRAMMAR_FILE_PATH).readText()
-    val grammar = Grammar(grammarStr)
-    val parseTable = PredictParsingTable(grammar)
-    val parser = LL1Parser()
+    println("Easy grammar results:")
+    test(MATH_GRAMMAR_EASY, EASY_GRAMMAR_LEXERS)
+    println("Hard grammar results:")
+    test(MATH_GRAMMAR_HARD, HARD_GRAMMAR_LEXERS)
+}
 
-    try {
-        parser.execute(grammar.root, parseTable, HandmadeLexer)
+fun test(grammarFile: String, lexers: List<TestLexer>) {
+    lexers.forEach { lexer ->
+        val grammarStr = File(grammarFile).readText()
+        val grammar = Grammar(grammarStr)
+        val parseTable = PredictParsingTable(grammar)
+
+        try {
+            println("   Input '${lexer.input}'")
+            println("   Table created")
+            LL1Parser().execute(grammar.root, parseTable, lexer)
+            println("   Input is OK")
+        } catch (ex: Exception) {
+            println("   Input is not good")
+        }
         println()
-        println("Grammar is OK")
-    } catch (ex: Exception) {
-        println("Grammar is not good. Message: ${ex.message}")
     }
 }
