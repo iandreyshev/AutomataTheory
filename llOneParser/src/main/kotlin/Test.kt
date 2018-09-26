@@ -1,7 +1,7 @@
 import lexer.TestLexer
 
-const val MATH_GRAMMAR_EASY = "math_grammar_easy.txt"
-const val MATH_GRAMMAR_HARD = "math_grammar.txt"
+const val EASY_MATH_GRAMMAR = "math_grammar_easy.txt"
+const val HARD_MATH_GRAMMAR = "math_grammar.txt"
 
 val EASY_GRAMMAR_LEXERS: List<TestLexer> = listOf(
         "id",

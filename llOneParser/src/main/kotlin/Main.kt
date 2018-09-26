@@ -5,26 +5,31 @@ import parser.PredictParsingTable
 import java.io.File
 
 fun main(args: Array<String>) {
-    println("Easy grammar results:")
-    test(MATH_GRAMMAR_EASY, EASY_GRAMMAR_LEXERS)
-    println("Hard grammar results:")
-    test(MATH_GRAMMAR_HARD, HARD_GRAMMAR_LEXERS)
+    EASY_MATH_GRAMMAR testWith EASY_GRAMMAR_LEXERS
+    HARD_MATH_GRAMMAR testWith HARD_GRAMMAR_LEXERS
 }
 
-fun test(grammarFile: String, lexers: List<TestLexer>) {
+infix fun String.testWith(lexers: List<TestLexer>) {
+    println("\nTest grammar from file '$this'")
     lexers.forEach { lexer ->
-        val grammarStr = File(grammarFile).readText()
+        val grammarStr = File(this).readText()
         val grammar = Grammar(grammarStr)
-        val parseTable = PredictParsingTable(grammar)
+        val parseTable: PredictParsingTable
+        println("  Input '${lexer.input}'")
 
         try {
-            println("   Input '${lexer.input}'")
-            println("   Table created")
-            LL1Parser().execute(grammar.root, parseTable, lexer)
-            println("   Input is OK")
+            parseTable = PredictParsingTable(grammar)
+            println("    Table created")
         } catch (ex: Exception) {
-            println("   Input is not good")
+            println("    Error during table building")
+            return
         }
-        println()
+
+        try {
+            LL1Parser().execute(grammar.root, parseTable, lexer)
+            println("    Input is OK")
+        } catch (ex: Exception) {
+            println("    Input is BAD")
+        }
     }
 }
