@@ -1,5 +1,5 @@
-E    ->   T E#                ->   ( id         ->   ) #dollar
-E#   ->   + T E# | #epsilon   ->   + #epsilon   ->   ) #dollar
-T    ->   F T#                ->   ( id         ->   + ) #dollar
-T#   ->   * F T# | #epsilon   ->   * #epsilon   ->   + ) #dollar
-F    ->   ( E ) | id          ->   ( id         ->   + * ) #dollar
+Expr     ->   Term Expr_                  ->   ( id         ->   ) #dollar
+Expr_    ->   + Term Expr_ | #epsilon     ->   + #epsilon   ->   ) #dollar
+Term     ->   Factor Term_                ->   ( id         ->   + ) #dollar
+Term_    ->   * Factor Term_ | #epsilon   ->   * #epsilon   ->   + ) #dollar
+Factor   ->   ( Expr ) | id               ->   ( id         ->   + * ) #dollar
