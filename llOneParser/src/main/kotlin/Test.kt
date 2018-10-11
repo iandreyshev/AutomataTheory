@@ -1,36 +1,32 @@
 import lexer.TestLexer
 
-const val EASY_MATH_GRAMMAR = "math_grammar_easy.txt"
-const val HARD_MATH_GRAMMAR = "math_grammar.txt"
+const val MATH_GRAMMAR = "math_grammar.txt"
+const val YOLANG_GRAMMAR = "yolang_grammar.txt"
 
-val EASY_GRAMMAR_LEXERS: List<TestLexer> = listOf(
+val MATH_LEXERS: List<TestLexer> = listOf(
+        "",
         "id",
         "id + id",
-        "id * id",
-        "*",
-        "+",
         "+ id",
-        "* id",
         "id +",
-        "id *",
-        "invalid token"
+        "id / id",
+        "id * id",
+        "id * id / id",
+        "id * ( id / id )",
+        "( id * ( id ) / id )",
+        "( id ) * ( id ) / ( id )",
+        "( id + id ) / id * ( id + id )",
+        "id * * id",
+        "( ) + id",
+        "id id",
+        "( id )",
+        "- id",
+        "- ( id )",
+        "( - id ) - id"
 ).map { TestLexer(it) }
 
-val HARD_GRAMMAR_LEXERS: List<TestLexer> = listOf(
-        "",
-        "1",
-        "1 + 1",
-        "+ 1",
-        "1 +",
-        "1 / 1",
-        "1 * 1",
-        "1 * 1 / 1",
-        "1 * ( 1 / 1 )",
-        "( 1 * ( 1 ) / 1 )",
-        "( 1 ) * ( 1 ) / ( 1 )",
-        "( 1 + 2 ) / 3 * ( 4 + 5 )",
-        "1 * * 2",
-        "( ) + 1",
-        "1 2 3 4 5 6 7 8 9",
-        "( 1 )"
-        ).map { TestLexer(it) }
+val YOLANG_LEXERS: List<TestLexer> = listOf(
+        """
+            fun id ( id : Int , id : Int ) => Int : return id ;
+        """.trimIndent()
+).map { TestLexer(it) }

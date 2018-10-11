@@ -1,5 +1,0 @@
-Expr     ->   Term Expr_                  ->   ( id         ->   ) #dollar
-Expr_    ->   + Term Expr_ | #epsilon     ->   + #epsilon   ->   ) #dollar
-Term     ->   Factor Term_                ->   ( id         ->   + ) #dollar
-Term_    ->   * Factor Term_ | #epsilon   ->   * #epsilon   ->   + ) #dollar
-Factor   ->   ( Expr ) | id               ->   ( id         ->   + * ) #dollar
