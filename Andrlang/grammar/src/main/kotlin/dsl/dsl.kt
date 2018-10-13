@@ -1,17 +1,14 @@
-package grammar
+package dsl
 
-/**
- * GC means Grammar Constructor
- */
+import grammar.*
 
-typealias GCSymbol = String
+typealias GDSLSymbol = String
+typealias GDSLProduction = List<GDSLSymbol>
+typealias GDSLAlternatives = List<GDSLProduction>
+typealias GDSLRule = Pair<GDSLSymbol, GDSLAlternatives>
 
-typealias GCProduction = List<GCSymbol>
-typealias GCAlternatives = List<GCProduction>
-typealias GCRule = Pair<GCSymbol, GCAlternatives>
-
-fun grammarOf(director: IGCRuleBuilder.() -> Unit): Grammar {
-    val builder = GCRuleBuilder().apply(director)
+fun grammarOf(director: IGDSLRuleBuilder.() -> Unit): Grammar {
+    val builder = RuleBuilder().apply(director)
     val gcRules = builder.build()
     val gcNonTerminalSymbols = mutableSetOf<String>()
     val gcNewRules: MutableList<Pair<NonTerminal, MutableList<Production>>> = mutableListOf()
@@ -34,48 +31,52 @@ fun grammarOf(director: IGCRuleBuilder.() -> Unit): Grammar {
             }
             Production(grammarSymbols)
         }
-        gcNewRules.firstOrNull { it.first.symbol == gcRuleNonTerminal }
+        gcNewRules.firstOrNull { it.first.literal == gcRuleNonTerminal }
                 ?.second
                 ?.addAll(productions)
     }
 
-    return Grammar(gcNewRules.map { Rule(it.first, it.second) })
+    val rulesList = gcNewRules.map {
+        Rule(it.first, it.second)
+    }
+
+    return Grammar(rulesList)
 }
 
-interface IGCRuleBuilder {
-    fun nonTerminal(symbol: GCSymbol, director: IGCProductionBuilder.() -> Unit)
+interface IGDSLRuleBuilder {
+    fun nonTerminal(symbol: GDSLSymbol, director: IGDSLProductionBuilder.() -> Unit)
 }
 
-class GCRuleBuilder : IGCRuleBuilder {
+private class RuleBuilder : IGDSLRuleBuilder {
 
-    private val mRules = mutableListOf<GCRule>()
+    private val mRules = mutableListOf<GDSLRule>()
 
-    override fun nonTerminal(symbol: GCSymbol, director: IGCProductionBuilder.() -> Unit) {
-        val builder = GCProductionBuilder().apply(director)
+    override fun nonTerminal(symbol: GDSLSymbol, director: IGDSLProductionBuilder.() -> Unit) {
+        val builder = ProductionBuilder().apply(director)
         mRules.add(symbol to builder.build())
     }
 
-    internal fun build(): List<GCRule> = mRules
+    fun build(): List<GDSLRule> = mRules
 
 }
 
-interface IGCProductionBuilder {
+interface IGDSLProductionBuilder {
     fun reproduce(vararg symbols: String)
     fun reproduceEmptySymbol()
 }
 
-class GCProductionBuilder : IGCProductionBuilder {
+private class ProductionBuilder : IGDSLProductionBuilder {
 
-    private val mProductionsSymbols = mutableListOf<GCProduction>()
+    private val mProductionsSymbols = mutableListOf<GDSLProduction>()
 
     override fun reproduce(vararg symbols: String) {
         mProductionsSymbols.add(symbols.toList())
     }
 
     override fun reproduceEmptySymbol() {
-        mProductionsSymbols.add(listOf(Terminal.newEpsilon().symbol))
+        mProductionsSymbols.add(listOf(Terminal.newEpsilon().literal))
     }
 
-    internal fun build(): GCAlternatives = mProductionsSymbols
+    fun build(): GDSLAlternatives = mProductionsSymbols
 
 }

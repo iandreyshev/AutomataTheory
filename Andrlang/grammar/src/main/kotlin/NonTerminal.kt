@@ -1,9 +1,11 @@
 package grammar
 
 data class NonTerminal(
-        val symbol: String
+        val literal: String
 ) {
 
-    override fun toString() = symbol
+    fun toSymbol(): GrammarSymbol = GrammarSymbol.from(this)
+
+    override fun toString(): String = literal
 
 }

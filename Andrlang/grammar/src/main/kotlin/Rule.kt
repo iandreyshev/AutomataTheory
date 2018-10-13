@@ -5,6 +5,6 @@ data class Rule(
         val productions: List<Production>
 ) {
 
-    override fun toString() = "${nonTerminal.symbol} -> ${productions.joinToString(separator = " | ")}"
+    override fun toString() = "${nonTerminal.literal} -> ${productions.joinToString(separator = " | ")}"
 
 }

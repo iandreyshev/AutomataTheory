@@ -1,13 +1,8 @@
 package grammar
 
 data class Terminal constructor(
-        val symbol: String
+        val literal: String
 ) {
-
-    val isEpsilon: Boolean = symbol == Grammar.EPSILON_SYMBOL
-    val isDollar: Boolean = symbol == Grammar.DOLLAR_SYMBOL
-
-    override fun toString() = symbol
 
     companion object {
         fun newDollar(): Terminal =
@@ -16,5 +11,12 @@ data class Terminal constructor(
         fun newEpsilon(): Terminal =
                 Terminal(Grammar.EPSILON_SYMBOL)
     }
+
+    val isEpsilon: Boolean = literal == Grammar.EPSILON_SYMBOL
+    val isDollar: Boolean = literal == Grammar.DOLLAR_SYMBOL
+
+    fun toSymbol(): GrammarSymbol = GrammarSymbol.from(this)
+
+    override fun toString(): String = literal
 
 }

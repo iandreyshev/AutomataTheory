@@ -1,6 +1,6 @@
 package grammar.samples
 
-import grammar.*
+import dsl.grammarOf
 
 /**
  * Syntax   ->   Expr
