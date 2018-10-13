@@ -1,0 +1,7 @@
+rootProject.name = 'andrlang'
+include 'compiler'
+include 'lexer'
+include 'grammar'
+include 'parser'
+include 'core-utils'
+
