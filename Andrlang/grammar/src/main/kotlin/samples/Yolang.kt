@@ -47,7 +47,7 @@ val GRAMMAR = grammarOf {
         reproduceEmptySymbol()
     }
     nonTerminal("Function") {
-        reproduce(KEYWORDS.Function, "id", "(", "ParamList", ")", ":", "Type", ",", "Statement")
+        reproduce(KEYWORDS.Function, "id", "(", "ParamList", ")", ":", "Type", ">", "Statement")
     }
     nonTerminal("ParamList") {
         reproduce("Param", "TailParamList")
@@ -58,7 +58,7 @@ val GRAMMAR = grammarOf {
         reproduceEmptySymbol()
     }
     nonTerminal("Param") {
-        reproduce("id", ",", "Type")
+        reproduce("id", ":", "Type")
     }
     nonTerminal("Type") {
         reproduce(KEYWORDS.TypeInt)

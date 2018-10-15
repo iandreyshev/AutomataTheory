@@ -1,7 +1,11 @@
 package grammar.print
 
 import grammar.Grammar
+import grammar.samples.GRAMMAR
 
+/**
+ * http://jsmachines.sourceforge.net/machines/ll1.html
+ */
 object JsmachinesToStringConverter {
 
     private const val EPSILON = "''"
@@ -27,4 +31,8 @@ object JsmachinesToStringConverter {
         return result
     }
 
+}
+
+fun main(args: Array<String>) {
+    println(JsmachinesToStringConverter.toString(GRAMMAR))
 }

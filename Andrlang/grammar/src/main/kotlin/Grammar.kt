@@ -3,8 +3,8 @@ package grammar
 class Grammar internal constructor(rulesList: List<Rule>) {
 
     companion object {
-        internal const val EMPTY_SYMBOL = "#eps"
-        internal const val END_OF_INPUT_SYMBOL = "$"
+        const val EMPTY_SYMBOL = "#eps"
+        const val END_OF_INPUT_SYMBOL = "$"
     }
 
     val rules: GrammarRules = GrammarRules(rulesList)
@@ -82,6 +82,7 @@ fun first(symbol: GrammarSymbol, rules: GrammarRules): Set<Terminal> {
 fun getFirstSetMap(rules: GrammarRules): Map<GrammarSymbol, Set<Terminal>> {
     val resultFirstSetMap = mutableMapOf<GrammarSymbol, Set<Terminal>>()
 
+    resultFirstSetMap[Terminal.emptySymbol().toSymbol()] = setOf(Terminal.emptySymbol())
     rules.terminals.forEach {
         resultFirstSetMap[it.toSymbol()] = first(it.toSymbol(), rules)
     }
@@ -117,7 +118,6 @@ fun getFollowSetMap(
             rules.rulesWithReproducing(symbol).forEach { rule ->
                 val productionsWithSymbol = rule.productions.filter { it.symbols.contains(symbol) }
                 for (production in productionsWithSymbol) {
-                    println("${rule.nonTerminal} -> $production")
                     val symbolsAfter = production.symbolsAfter(symbol)
                     val firstSetForSymbolsAfter = getFirstSet(symbolsAfter)
 

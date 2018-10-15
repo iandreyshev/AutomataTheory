@@ -19,7 +19,10 @@ repositories {
 }
 
 dependencies {
+    compile project(":grammar")
+    compile project(":core-utils")
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    testCompile 'junit:junit:4.12'
 }
 
 compileKotlin {
