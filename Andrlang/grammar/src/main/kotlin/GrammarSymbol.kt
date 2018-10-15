@@ -1,6 +1,6 @@
 package grammar
 
-data class GrammarSymbol constructor(
+data class GrammarSymbol private constructor(
         val terminal: Terminal?,
         val nonTerminal: NonTerminal?
 ) {

@@ -74,7 +74,7 @@ private class ProductionBuilder : IGDSLProductionBuilder {
     }
 
     override fun reproduceEmptySymbol() {
-        mProductionsSymbols.add(listOf(Terminal.newEpsilon().literal))
+        mProductionsSymbols.add(listOf(Terminal.emptySymbol().literal))
     }
 
     fun build(): GDSLAlternatives = mProductionsSymbols

@@ -3,7 +3,7 @@ package grammar.samples
 import dsl.*
 
 /**
- * <Program>       -> <FunctionList> EndOfFile
+ * <Program>       -> <FunctionList> EOF
  * <FunctionList>  -> <Function> <FunctionList>
  * <FunctionList>  -> #Eps#
  * <Function>      -> FUNC IDENTIFIER LPAREN <ParamList> RPAREN ARROW <Type> COLON <Statement>
@@ -40,7 +40,7 @@ import dsl.*
  **/
 val GRAMMAR = grammarOf {
     nonTerminal("Program") {
-        reproduce("FunctionList", KEYWORDS.EndOfFile)
+        reproduce("FunctionList", KEYWORDS.EOF)
     }
     nonTerminal("FunctionList") {
         reproduce("Function", "FunctionList")
@@ -61,10 +61,10 @@ val GRAMMAR = grammarOf {
         reproduce("id", ",", "Type")
     }
     nonTerminal("Type") {
-        reproduce("Int")
-        reproduce("Float")
-        reproduce("Bool")
-        reproduce("Array", "[", "Type", "]")
+        reproduce(KEYWORDS.TypeInt)
+        reproduce(KEYWORDS.TypeFloat)
+        reproduce(KEYWORDS.TypeBoolean)
+        reproduce(KEYWORDS.TypeArray, "[", "Type", "]")
     }
     nonTerminal("Statement") {
         reproduce("Condition")
@@ -72,17 +72,17 @@ val GRAMMAR = grammarOf {
         reproduce("Decl")
         reproduce("Assign")
         reproduce("Return")
-        reproduce("Composite")
+        reproduce("CompositeStatement")
     }
     nonTerminal("Condition") {
-        reproduce("if", "(", "Expression", ")", "Statement", "OptionalElse")
+        reproduce(KEYWORDS.Condition, "(", "Expression", ")", "Statement", "OptionalElse")
     }
     nonTerminal("OptionalElse") {
         reproduce("else", "Statement")
         reproduceEmptySymbol()
     }
     nonTerminal("Loop") {
-        reproduce("while", "(", "Expression", ")", "Statement")
+        reproduce(KEYWORDS.CycleWithPreCondition, "(", "Expression", ")", "Statement")
     }
     nonTerminal("Decl") {
         reproduce("var", "id", ":", "Type", ";")
@@ -93,8 +93,8 @@ val GRAMMAR = grammarOf {
     nonTerminal("Return") {
         reproduce("return", "Expression", ";")
     }
-    nonTerminal("Composite") {
-        reproduce(KEYWORDS.StatementBracketLeft, "StatementList", KEYWORDS.StatementBracketRight)
+    nonTerminal("CompositeStatement") {
+        reproduce("{", "StatementList", "}")
     }
     nonTerminal("StatementList") {
         reproduce("Statement", "StatementList")
@@ -109,8 +109,12 @@ val GRAMMAR = grammarOf {
 }
 
 object KEYWORDS {
-    const val EndOfFile = "EOF"
+    const val EOF = "EOF"
     const val Function = "Func"
-    const val StatementBracketLeft = "{"
-    const val StatementBracketRight = "}"
+    const val TypeInt = "Int"
+    const val TypeFloat = "Float"
+    const val TypeBoolean = "Bool"
+    const val TypeArray = "Array"
+    const val Condition = "if"
+    const val CycleWithPreCondition = "while"
 }

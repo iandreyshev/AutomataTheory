@@ -5,15 +5,15 @@ data class Terminal constructor(
 ) {
 
     companion object {
-        fun newDollar(): Terminal =
-                Terminal(Grammar.DOLLAR_SYMBOL)
+        fun endOfInput(): Terminal =
+                Terminal(Grammar.END_OF_INPUT_SYMBOL)
 
-        fun newEpsilon(): Terminal =
-                Terminal(Grammar.EPSILON_SYMBOL)
+        fun emptySymbol(): Terminal =
+                Terminal(Grammar.EMPTY_SYMBOL)
     }
 
-    val isEpsilon: Boolean = literal == Grammar.EPSILON_SYMBOL
-    val isDollar: Boolean = literal == Grammar.DOLLAR_SYMBOL
+    val isEpsilon: Boolean = literal == Grammar.EMPTY_SYMBOL
+    val isDollar: Boolean = literal == Grammar.END_OF_INPUT_SYMBOL
 
     fun toSymbol(): GrammarSymbol = GrammarSymbol.from(this)
 
