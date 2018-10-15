@@ -30,3 +30,7 @@ object PlanetCalcToStringConverter {
     }
 
 }
+
+fun main(args: Array<String>) {
+    println(PlanetCalcToStringConverter.toString(GRAMMAR))
+}

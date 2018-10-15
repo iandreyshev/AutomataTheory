@@ -14,21 +14,21 @@ import dsl.grammarOf
  **/
 val MATH_EASY_GRAMMAR = grammarOf {
     nonTerminal("E") {
-        reproduce("T", "E#")
+        reproduced("T", "E#")
     }
     nonTerminal("E#") {
-        reproduce("+", "T", "E#")
-        reproduceEmptySymbol()
+        reproduced("+", "T", "E#")
+        reproducedEmptySymbol()
     }
     nonTerminal("T") {
-        reproduce("F", "T#")
+        reproduced("F", "T#")
     }
     nonTerminal("T#") {
-        reproduce("*", "F", "T#")
-        reproduceEmptySymbol()
+        reproduced("*", "F", "T#")
+        reproducedEmptySymbol()
     }
     nonTerminal("F") {
-        reproduce("(", "E", ")")
-        reproduce("id")
+        reproduced("(", "E", ")")
+        reproduced("id")
     }
 }

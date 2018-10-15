@@ -40,7 +40,7 @@ class FollowSetTest {
 
     @Test
     fun type() = "Type" expected setOf(
-            Terminal(","), Terminal("]"), Terminal(")"), Terminal(";"), Terminal(">")
+            Terminal(","), Terminal(":"), Terminal(")"), Terminal(";"), Terminal(">")
     )
 
     @Test

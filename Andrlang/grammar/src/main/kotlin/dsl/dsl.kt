@@ -61,19 +61,19 @@ private class RuleBuilder : IGDSLRuleBuilder {
 }
 
 interface IGDSLProductionBuilder {
-    fun reproduce(vararg symbols: String)
-    fun reproduceEmptySymbol()
+    fun reproduced(vararg symbols: String)
+    fun reproducedEmptySymbol()
 }
 
 private class ProductionBuilder : IGDSLProductionBuilder {
 
     private val mProductionsSymbols = mutableListOf<GDSLProduction>()
 
-    override fun reproduce(vararg symbols: String) {
+    override fun reproduced(vararg symbols: String) {
         mProductionsSymbols.add(symbols.toList())
     }
 
-    override fun reproduceEmptySymbol() {
+    override fun reproducedEmptySymbol() {
         mProductionsSymbols.add(listOf(Terminal.emptySymbol().literal))
     }
 

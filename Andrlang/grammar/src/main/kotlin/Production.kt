@@ -4,6 +4,9 @@ data class Production(
         val symbols: List<GrammarSymbol>
 ) {
 
+    constructor(vararg symbols: GrammarSymbol)
+            : this(symbols.toList())
+
     val firstOrNull by lazy {
         symbols.firstOrNull()
     }

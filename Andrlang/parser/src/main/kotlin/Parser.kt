@@ -19,12 +19,12 @@ class Parser {
                 table[topNonTerminal ?: return@lazy null, token]
             }
 
-//            println()
-//            println(stack.joinToString(" "))
-//            println(lexer.toString())
-//            println(topNonTerminal)
-//            println(productionFromTable)
-//            println("$tokenPosition $token")
+            println()
+            println(stack.joinToString(" "))
+            println(lexer.toString())
+            println(topNonTerminal)
+            println(productionFromTable)
+            println("$tokenPosition $token")
 
             when {
                 stack.peek().terminal == token -> {

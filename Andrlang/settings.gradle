@@ -1,4 +1,4 @@
-rootProject.name = 'andrlang'
+rootProject.name = 'jyolang'
 include 'compiler'
 include 'lexer'
 include 'grammar'

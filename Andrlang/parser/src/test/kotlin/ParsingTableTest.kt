@@ -56,7 +56,7 @@ class ParsingTableTest {
     @Test
     fun param() = testTableRow("Param") {
         "id" expected listOf(
-                terminal("id"), terminal(","), nonTerminal("Type")
+                terminal("id"), terminal(":"), nonTerminal("Type")
         )
     }
 
@@ -98,6 +98,24 @@ class ParsingTableTest {
         )
     }
 
+    @Test
+    fun condition() = testTableRow("Condition") {
+        KEYWORDS.Condition expected listOf(
+                terminal(KEYWORDS.Condition), terminal("("), nonTerminal("Expression"), terminal(")"),
+                nonTerminal("Statement"), nonTerminal("OptionalElse")
+        )
+    }
+
+    @Test
+    fun optionalElse() = testTableRow("OptionalElse") {
+        KEYWORDS.EOF.expectedEmptySymbol()
+        KEYWORDS.Function.expectedEmptySymbol()
+        "id".expectedEmptySymbol()
+        "if".expectedEmptySymbol()
+        "else".expectedEmptySymbol()
+        "while".expectedEmptySymbol()
+    }
+
     private inner class TestBuilder(private val row: NonTerminal) {
 
         private val mTestData: MutableMap<Terminal, List<GrammarSymbol>> = mutableMapOf()
@@ -111,8 +129,8 @@ class ParsingTableTest {
 
             GRAMMAR.terminals.toMutableList().apply {
                 removeAll(mTestData.keys)
-            }.forEach { emptyColl ->
-                val tableCell = mTable[row, emptyColl]
+            }.forEach { emptyColumn ->
+                val tableCell = mTable[row, emptyColumn]
                 assertEquals(null, tableCell)
             }
         }

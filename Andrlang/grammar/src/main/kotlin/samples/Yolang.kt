@@ -40,81 +40,82 @@ import dsl.*
  **/
 val GRAMMAR = grammarOf {
     nonTerminal("Program") {
-        reproduce("FunctionList", KEYWORDS.EOF)
+        reproduced("FunctionList", KEYWORDS.EOF)
     }
     nonTerminal("FunctionList") {
-        reproduce("Function", "FunctionList")
-        reproduceEmptySymbol()
+        reproduced("Function", "FunctionList")
+        reproducedEmptySymbol()
     }
     nonTerminal("Function") {
-        reproduce(KEYWORDS.Function, "id", "(", "ParamList", ")", ":", "Type", ">", "Statement")
+        reproduced(KEYWORDS.Function, "id", "(", "ParamList", ")", "->", "Type", ":", "Statement")
     }
     nonTerminal("ParamList") {
-        reproduce("Param", "TailParamList")
-        reproduceEmptySymbol()
+        reproduced("Param", "TailParamList")
+        reproducedEmptySymbol()
     }
     nonTerminal("TailParamList") {
-        reproduce(",", "Param", "TailParamList")
-        reproduceEmptySymbol()
+        reproduced(",", "Param", "TailParamList")
+        reproducedEmptySymbol()
     }
     nonTerminal("Param") {
-        reproduce("id", ":", "Type")
+        reproduced("id", ":", "Type")
     }
     nonTerminal("Type") {
-        reproduce(KEYWORDS.TypeInt)
-        reproduce(KEYWORDS.TypeFloat)
-        reproduce(KEYWORDS.TypeBoolean)
-        reproduce(KEYWORDS.TypeArray, "[", "Type", "]")
+        reproduced(KEYWORDS.TypeInt)
+        reproduced(KEYWORDS.TypeFloat)
+        reproduced(KEYWORDS.TypeBoolean)
+        reproduced(KEYWORDS.TypeArray, "<", "Type", ">")
     }
     nonTerminal("Statement") {
-        reproduce("Condition")
-        reproduce("Loop")
-        reproduce("Decl")
-        reproduce("Assign")
-        reproduce("Return")
-        reproduce("CompositeStatement")
+        reproduced("Condition")
+        reproduced("Loop")
+        reproduced("Decl")
+        reproduced("Assign")
+        reproduced("Return")
+        reproduced("CompositeStatement")
     }
     nonTerminal("Condition") {
-        reproduce(KEYWORDS.Condition, "(", "Expression", ")", "Statement", "OptionalElse")
+        reproduced(KEYWORDS.Condition, "(", "Expression", ")", "Statement", "OptionalElse")
     }
     nonTerminal("OptionalElse") {
-        reproduce("else", "Statement")
-        reproduceEmptySymbol()
+        reproduced("else", "Statement")
+        reproducedEmptySymbol()
     }
     nonTerminal("Loop") {
-        reproduce(KEYWORDS.CycleWithPreCondition, "(", "Expression", ")", "Statement")
+        reproduced(KEYWORDS.CycleWithPreCondition, "(", "Expression", ")", "Statement")
     }
     nonTerminal("Decl") {
-        reproduce("var", "id", ":", "Type", ";")
+        reproduced("var", "id", ":", "Type", ";")
     }
     nonTerminal("Assign") {
-        reproduce("id", "=", "Expression", ";")
+        reproduced("id", "=", "Expression", ";")
     }
     nonTerminal("Return") {
-        reproduce("return", "Expression", ";")
+        reproduced("return", "Expression", ";")
     }
     nonTerminal("CompositeStatement") {
-        reproduce("{", "StatementList", "}")
+        reproduced("{", "StatementList", "}")
     }
     nonTerminal("StatementList") {
-        reproduce("Statement", "StatementList")
-        reproduceEmptySymbol()
+        reproduced("Statement", "StatementList")
+        reproducedEmptySymbol()
     }
     nonTerminal("Expression") {
-        reproduce("id")
-        reproduce("literal")
-        reproduce("true")
-        reproduce("false")
+        reproduced("id")
+        reproduced("literal")
+        reproduced("true")
+        reproduced("false")
     }
 }
 
 object KEYWORDS {
     const val EOF = "EOF"
-    const val Function = "Func"
+    const val Function = "func"
     const val TypeInt = "Int"
     const val TypeFloat = "Float"
     const val TypeBoolean = "Bool"
     const val TypeArray = "Array"
     const val Condition = "if"
+    const val ConditionElse = "else"
     const val CycleWithPreCondition = "while"
 }
